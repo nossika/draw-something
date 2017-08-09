@@ -1,0 +1,20 @@
+{
+  "name": "draw-something-server",
+  "version": "0.1.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index"
+  },
+  "author": "NossiKa",
+  "license": "MIT",
+  "devDependencies": {
+    "koa": "^2.3.0",
+    "koa-better-body": "^3.0.4",
+    "koa-router": "^7.2.1",
+    "koa-static": "^4.0.1"
+  },
+  "dependencies": {
+    "socket.io": "^2.0.3"
+  }
+}

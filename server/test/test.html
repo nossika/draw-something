@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="./socket.io-client.js"></script>
+</head>
+<body>
+<script>
+    axios.get('http://localhost:7869/list')
+        .then(res => {
+            console.log(res.data);
+        });
+
+    const socket = io('ws://localhost:7777');
+    socket.on('connect', () => {
+        socket.emit('loginRoom', 'asd', (res) => {
+            console.log('loginRoom res', res)
+        });
+
+        setTimeout(() => {
+            socket.emit('chatMsg', 1);
+        }, 1000);
+    });
+    socket.on('chatMsg', msg => {
+        console.log('chatMsg', msg);
+    });
+    socket.on('enterRoom', msg => {
+        console.log('enterRoom', msg);
+    });
+    socket.on('leaveRoom', msg => {
+        console.log('leaveRoom', msg);
+    });
+</script>
+</body>
+</html>
