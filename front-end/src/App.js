@@ -7,20 +7,20 @@ export default class App extends Component {
     render () {
         return (
             <div>
-                <Route path="/a" render={
-                    (p) => {
-                        return (
-                            <Board url={p.match.url}/>
-                        )
+                {/*<Route path="/a" render={*/}
+                    {/*(p) => {*/}
+                        {/*return (*/}
+                            {/*<Board url={p.match.url}/>*/}
+                        {/*)*/}
+                    {/*}*/}
+                {/*}/>*/}
+                <Route path="/" exact component={ AsyncComponent(() => import('containers/Home')) }/>
+                <Route path="/:room" render={
+                    ({ match }) => {
+                        const Room = AsyncComponent(() => import('containers/Room'));
+                        return <Room room={match.params.room}/>
                     }
                 }/>
-                <Route path="/b" render={
-                    () => {
-                        let Aaa = AsyncComponent(() => import('containers/Async'));
-                        return <Aaa name="1"/>
-                    }
-                }/>
-                <Board/>
             </div>
         )
     }

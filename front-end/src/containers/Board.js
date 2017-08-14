@@ -3,7 +3,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux'
 import * as cardActions from 'actions/card';
 import Card from 'components/Card';
-import http from 'utils/http';
+import http from 'network/http';
 
 @connect(
     state => ({
@@ -17,7 +17,7 @@ export default class Board extends Component {
 
         return (
             <div>
-                card count: { list.map(item => (<Card key={item} name={item}/>)) }
+                card co1unt: { list.map(item => (<Card key={item} name={item}/>)) }
                 <div
                     onClick={() => {
                         http.request({

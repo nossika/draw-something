@@ -1,17 +1,5 @@
 const ROOMS = global.ROOMS;
-const CLIENTS = global.CLIENTS;
 
-const emitInRoom = (ctx, channel, data, cb) => {
-    let room = ctx.room;
-    if (!room || !ROOMS[room]) return;
-    for (let client of ROOMS[room]) {
-        if (client === ctx) continue;
-        client.io.emit(channel, Object.assign({}, data || {}, {
-            name: ctx.info.name || ctx.id,
-            date: Date.now()
-        }), cb);
-    }
-};
 const okCallback = (cb) => {
     typeof cb === 'function' && cb({
         ok: 1,
@@ -35,28 +23,31 @@ const handler = {
         ROOMS[room].add(this);
         handler.leaveRoom.call(this);
         this.room = room;
-        emitInRoom(this, 'enterRoom');
+        this.emitInRoom('enterRoom');
         okCallback(cb);
     },
     leaveRoom (cb) { // 用户离开房间
-        ROOMS[this.room] && ROOMS[this.room].delete(this);
-        emitInRoom(this, 'leaveRoom');
+        let roomSet = ROOMS[this.room];
+        if (roomSet) {
+            roomSet.delete(this);
+            if (!roomSet.size) Reflect.deleteProperty(ROOMS, this.room);
+        }
+        this.emitInRoom('leaveRoom');
         okCallback(cb);
     },
     setInfo (info) { // 设置用户信息
         Object.assign(this.info, info);
     },
     chatMsg (msg, cb) { // 发送消息
-        emitInRoom(this, 'chatMsg', { msg });
+        this.emitInRoom('chatMsg', { msg });
         okCallback(cb);
     },
     draw (data, cb) {
-        emitInRoom(this, 'draw', data);
+        this.emitInRoom('draw', data);
         okCallback(cb);
     },
     disconnect () { // 用户离线
         handler.leaveRoom.call(this);
-        Reflect.deleteProperty(CLIENTS, this.id);
     },
 };
 module.exports = class {
@@ -69,6 +60,17 @@ module.exports = class {
         this.id = client.id;
         this.info = {};
         this.room = undefined;
-        CLIENTS[client.id] = this;
+
+    }
+    emitInRoom (channel, data, cb) {
+        let room = this.room;
+        if (!room || !ROOMS[room]) return;
+        for (let client of ROOMS[room]) {
+            if (client === this) continue;
+            client.io.emit(channel, Object.assign({}, data || {}, {
+                user: this.info.name || this.id,
+                date: Date.now()
+            }), cb);
+        }
     }
 };

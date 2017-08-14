@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-export default class Board extends Component {
+export default class Room extends Component {
     static propTypes = {
-        name: PropTypes.string.isRequired
+        room: PropTypes.string.isRequired
     };
     render () {
+        let { room } = this.props;
         return (
-            <div>asffd</div>
+            <div>room: {room}</div>
         )
     }
 }
