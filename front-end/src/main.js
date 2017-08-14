@@ -5,23 +5,25 @@ import App from './App';
 import store from './reducers';
 import { Route, HashRouter as Router, Link } from 'react-router-dom'
 import socket from 'network/ws';
+import { updateRoomList } from 'actions/room';
 
 socket.on('connect', () => {
-    console.log(1);
     socket.emit('loginRoom', 'asd');
-    setTimeout(() => {
-        socket.emit('chatMsg', 'asd');
-    }, 500);
 });
 socket.on('chatMsg', d => {
     console.log(d)
 });
 socket.on('roomList', d => {
-    console.log(d, 'roomList')
+    let list = [];
+    for (let room in d) {
+        list.push({
+            room,
+            count: d[room]
+        })
+    }
+    store.dispatch(updateRoomList(list));
 });
-socket.on('asd', d => {
-    console.log(d, 'asd')
-});
+
 ReactDOM.render(
     <Provider store={store}>
         <Router>
