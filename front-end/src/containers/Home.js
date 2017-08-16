@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 import { Link } from 'react-router-dom';
 import * as roomActions from 'actions/room';
 import history from 'utils/history';
+import socket from 'network/ws';
 
 @connect(
     state => ({
@@ -53,5 +54,10 @@ export default class Home extends Component {
         if (e.keyCode === 13) {
             history.push('/' + this.state.roomInputValue);
         }
+    }
+    componentDidMount () {
+        let { setRoom } = this.props;
+        socket.emit('leaveRoom');
+        setRoom('');
     }
 }

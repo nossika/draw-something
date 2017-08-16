@@ -2,9 +2,9 @@ export const updateRoomList = (roomList) => ({
     type: 'UPDATE_ROOM_LIST',
     roomList
 });
-export const setRoom = (roomName) => ({
+export const setRoom = (name) => ({
     type: 'SET_ROOM',
-    roomName
+    name
 });
 export const setRoomPeople = (peopleList) => ({
     type: 'SET_ROOM_PEOPLE',

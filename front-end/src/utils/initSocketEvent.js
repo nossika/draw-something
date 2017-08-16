@@ -9,8 +9,13 @@ export default (socket) => {
     socket.on('disconnect', () => {
         store.dispatch(networkActions.wsDisconnect());
     });
-    socket.on('chatMsg', d => {
-        console.log(d)
+    socket.on('reconnect', () => {
+        console.log('reconnect'); // todo 断线重连时重进房间
+        let state = store.getState();
+        let roomName = state.room.myRoom.name;
+        if (roomName) {
+            socket.emit('enterRoom', roomName);
+        }
     });
     socket.on('roomList', d => {
         let list = [];

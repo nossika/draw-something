@@ -20,7 +20,7 @@ export default combineReducers({
         switch (action.type) {
             case 'SET_ROOM':
                 return Object.assign({}, state, {
-                    roomName: action.roomName
+                    name: action.name
                 });
             case 'SET_ROOM_PEOPLE':
                 return Object.assign({}, state, {

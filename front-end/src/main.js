@@ -4,8 +4,9 @@ import { Provider } from 'react-redux';
 import App from './App';
 import store from './reducers';
 import socket from 'network/ws';
-import initSocket from 'utils/initSocketEvent';
-initSocket(socket);
+import initSocketEvent from 'utils/initSocketEvent';
+
+initSocketEvent(socket);
 
 ReactDOM.render(
     <Provider store={store}>

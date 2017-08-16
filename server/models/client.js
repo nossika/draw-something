@@ -14,7 +14,7 @@ const failCallback = (cb, msg) => {
     });
 };
 const handler = {
-    loginRoom (room, cb) { // 用户加入房间
+    enterRoom (room, cb) { // 用户加入房间
         if (!room) {
             failCallback(cb, 'invalid room name!');
             return;

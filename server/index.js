@@ -8,31 +8,22 @@ global.IO = IO;
 global.ROOMS = {};
 global.CLIENTS = {};
 
-const Client = require('./models/client');
-const setRouter = require('./router');
-const util = require('./utils');
-const event = require('./models/event');
+const initSocketEvent = require('./utils/initSocketEvent');
 
-IO.on('connection', client => {
-    CLIENTS[client.id] = new Client(client);
-    client.emit('roomList', util.getRoomList());
-    client.on('disconnect', () => {
-        Reflect.deleteProperty(CLIENTS, client.id);
-    });
-});
-
-setInterval(event.sendRoomList, 2000);
+initSocketEvent(IO);
 
 IO.listen(7777, () => {
     console.log(7777, 'ws port', Date.now());
 });
 
 app.use((ctx, next) => {
-    console.log('request:', ctx);
+    console.log('receive request:', ctx);
     next();
 });
 
-setRouter(router);
+const initRouter = require('./router');
+
+initRouter(router);
 app.use(router.routes());
 
 app.use((ctx, next) => {
