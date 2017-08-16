@@ -16,18 +16,21 @@ export default class App extends Component {
     render () {
         const { loadingStatus, webSocketStatus, loading, loaded, wsConnect, wsDisconnect } = this.props;
         return (
-            <Router>
-                <Switch>
-                    <Route path="/" exact component={ AsyncComponent(() => import('containers/Home')) }/>
-                    <Route path="/:room" render={
+            <section>
+
+                <div>webSocketStatus: { webSocketStatus }</div>
+                <Router>
+                    <Switch>
+                        <Route path="/" exact component={ AsyncComponent(() => import('containers/Home')) }/>
+                        <Route path="/:room" render={
                         ({ match }) => {
                             const Room = AsyncComponent(() => import('containers/Room'));
-                            return <div>room: {match.params.room}</div>
+                            return <Room room={ match.params.room }/>
                         }
                     }/>
-                </Switch>
-            </Router>
-
+                    </Switch>
+                </Router>
+            </section>
         )
     }
 }

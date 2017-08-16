@@ -3,6 +3,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom';
 import * as roomActions from 'actions/room';
+import history from 'utils/history';
 
 @connect(
     state => ({
@@ -31,7 +32,6 @@ export default class Home extends Component {
                     roomList.map(({ room, count }) => (
                         <div
                             key={room}
-
                         >
                             <Link to={'/' + room}>
                                 { room }: { count }
@@ -50,8 +50,8 @@ export default class Home extends Component {
         });
     }
     enterRoom (e) {
-        console.log(e.keyCode, e)
-        console.log(this.state.roomInputValue)
-
+        if (e.keyCode === 13) {
+            history.push('/' + this.state.roomInputValue);
+        }
     }
 }
