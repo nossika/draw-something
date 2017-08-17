@@ -14,7 +14,7 @@ import socket from 'network/ws';
 )
 export default class Home extends Component {
     state = {
-        roomInputValue: '1'
+        roomInputValue: ''
     };
     render () {
         const { roomList } = this.props;

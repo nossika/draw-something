@@ -3,8 +3,8 @@ import { combineReducers } from 'redux';
 let initialRoomList = [];
 
 let initialMyRoom = {
-    roomName: '',
-    peopleList: {}
+    name: '',
+    peopleList: [] // [{id: String, info: Object}]
 };
 
 export default combineReducers({
@@ -29,15 +29,16 @@ export default combineReducers({
             case 'ADD_ROOM_PEOPLE':
             {
                 let newState = Object.assign({}, state);
+                newState.peopleList = newState.peopleList.slice();
                 let { id, info } = action.people;
-                newState.peopleList[id] = info;
+                newState.peopleList.push({ id, info });
                 return newState;
             }
             case 'DEL_ROOM_PEOPLE':
             {
                 let newState = Object.assign({}, state);
                 let { id, info } = action.people;
-                Reflect.deleteProperty(newState.peopleList, id);
+                newState.peopleList = newState.peopleList.filter(item => item.id !== id);
                 return newState;
             }
             default:

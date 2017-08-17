@@ -1,5 +1,5 @@
 import store from '../reducers';
-import { updateRoomList } from 'actions/room';
+import * as roomAction from 'actions/room';
 import * as networkActions from 'actions/network';
 
 export default (socket) => {
@@ -25,6 +25,15 @@ export default (socket) => {
                 count: d[room]
             })
         }
-        store.dispatch(updateRoomList(list));
+        store.dispatch(roomAction.updateRoomList(list));
+    });
+    socket.on('roomInfo', d => {
+        store.dispatch(roomAction.setRoomPeople(d));
+    });
+    socket.on('peopleEnterRoom', people => {
+        store.dispatch(roomAction.addRoomPeople(people));
+    });
+    socket.on('peopleLeaveRoom', people => {
+        store.dispatch(roomAction.delRoomPeople(people));
     });
 }
