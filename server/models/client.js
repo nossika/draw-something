@@ -1,4 +1,5 @@
 const ROOMS = global.ROOMS;
+const util = require('../utils');
 
 const okCallback = (cb) => {
     typeof cb === 'function' && cb({
@@ -19,11 +20,12 @@ const handler = {
             failCallback(cb, 'invalid room name!');
             return;
         }
+        handler.leaveRoom.call(this);
         if (!ROOMS[room]) ROOMS[room] = new Set();
         ROOMS[room].add(this);
-        handler.leaveRoom.call(this);
         this.room = room;
-        this.emitInRoom('enterRoom');
+        this.emitInRoom('peopleEnterRoom');
+        this.io.emit('roomInfo', util.getRoomInfo(room));
         okCallback(cb);
     },
     leaveRoom (cb) { // 用户离开房间
@@ -32,10 +34,10 @@ const handler = {
             roomSet.delete(this);
             if (!roomSet.size) Reflect.deleteProperty(ROOMS, this.room);
         }
-        this.emitInRoom('leaveRoom');
+        this.emitInRoom('peopleLeaveRoom');
         okCallback(cb);
     },
-    setInfo (info) { // 设置用户信息
+    setUserInfo (info) { // 设置用户信息
         Object.assign(this.info, info);
     },
     chatMsg (msg, cb) { // 发送消息
@@ -68,7 +70,8 @@ module.exports = class {
         for (let client of ROOMS[room]) {
             if (client === this) continue;
             client.io.emit(channel, Object.assign({}, data || {}, {
-                user: this.info.name || this.id,
+                info: this.info,
+                id: this.id,
                 date: Date.now()
             }), cb);
         }

@@ -7,7 +7,9 @@ import * as roomActions from 'actions/room';
 
 @connect(
     state => ({
+        myRoom: state.room.myRoom
     }),
+
     dispatch => bindActionCreators({...roomActions}, dispatch)
 )
 export default class Room extends Component {
@@ -15,9 +17,13 @@ export default class Room extends Component {
         room: PropTypes.string.isRequired
     };
     render () {
-        let { room } = this.props;
+        let { room, myRoom } = this.props;
         return (
-            <div>room: {room}</div>
+            <section>
+                <div>room: { myRoom.name }</div>
+                <div>count: { myRoom.peopleList.length }</div>
+                <div>list: { JSON.stringify(myRoom.peopleList) }</div>
+            </section>
         )
     }
     componentDidMount () {

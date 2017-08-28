@@ -7,5 +7,12 @@ module.exports = {
             list[room] = ROOMS[room].size;
         }
         return list;
+    },
+    getRoomInfo (room) {
+        let set = ROOMS[room];
+        return set ? Array.from(set).map(item => ({
+            id: item.id,
+            info: item.info
+        })) : [];
     }
 };
