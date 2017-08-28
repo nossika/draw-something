@@ -1,7 +1,7 @@
 const util = require('./index');
 const ROOMS = global.ROOMS;
 const CLIENTS = global.CLIENTS;
-const Client = require('../models/client');
+const Client = require('../models/Client');
 
 module.exports = (IO) => {
     setInterval(() => {
