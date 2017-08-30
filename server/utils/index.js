@@ -14,5 +14,11 @@ module.exports = {
             id: item.id,
             info: item.info
         })) : [];
+    },
+    clientInfo (client) {
+        return {
+            id: client.id,
+            info: client.info
+        }
     }
 };

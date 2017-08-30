@@ -60,6 +60,7 @@ module.exports = class {
 
         this.io = client;
         this.id = client.id;
+
         this.info = {};
         this.room = undefined;
 
