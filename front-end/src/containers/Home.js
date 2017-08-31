@@ -30,12 +30,12 @@ export default class Home extends Component {
                     />
                 </div>
                 {
-                    roomList.map(({ room, count }) => (
+                    roomList.map(({ roomName, peopleCount, owner }) => (
                         <div
-                            key={room}
+                            key={roomName}
                         >
-                            <Link to={'/' + room}>
-                                { room }: { count }
+                            <Link to={'/' + roomName}>
+                                { roomName }: { peopleCount }, owner: { owner ? '-' : owner.id }
                             </Link>
                         </div>
                     ))

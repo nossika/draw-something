@@ -1,5 +1,5 @@
-const Client = require('./_Client');
-const UTIL = require('../utils');
+const util = require('../utils');
+const Client = require('./_Client.js');
 
 module.exports = class Room {
     constructor ({
@@ -12,13 +12,14 @@ module.exports = class Room {
         this._handler = {};
     }
     peopleEnter (client) {
-        if (client.constructor !== Client) return; // validate client
+        // if (client.constructor !== Client) return; // validate client
         this.clients.add(client);
         this.broadcast({
             channel: 'peopleEnterRoom',
             sender: client
         });
-        client.io.emit('roomInfo', util.getRoomInfo(room));
+        client.io.emit('roomInfo', util.getRoomInfo(this.name));
+
         if (this.clients.size === 1) {
             this.setOwner(client);
         }
@@ -45,7 +46,7 @@ module.exports = class Room {
         this.broadcast({
             channel: 'roomOwnerChanged',
             data: {
-                owner: UTIL.clientInfo(client)
+                owner: util.clientInfo(client)
             }
         });
     }
@@ -67,7 +68,7 @@ module.exports = class Room {
             if (exclude.includes(client)) continue;
             client.io.emit(channel, Object.assign(
                 {},
-                sender ? UTIL.clientInfo(sender) : {},
+                sender ? util.clientInfo(sender) : {},
                 { date: Date.now() },
                 data || {},
             ), callback);

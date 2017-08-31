@@ -21,8 +21,8 @@ export default class Room extends Component {
         return (
             <section>
                 <div>room: { myRoom.name }</div>
-                <div>count: { myRoom.peopleList.length }</div>
-                <div>list: { JSON.stringify(myRoom.peopleList) }</div>
+                <div>count: { myRoom.people.length }</div>
+                <div>list: { JSON.stringify(myRoom.people) }</div>
             </section>
         )
     }

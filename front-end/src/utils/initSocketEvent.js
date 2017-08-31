@@ -18,17 +18,21 @@ export default (socket) => {
         }
     });
     socket.on('roomList', d => {
-        let list = [];
-        for (let room in d) {
-            list.push({
-                room,
-                count: d[room]
-            })
-        }
+        let list = d.map(roomInfo => ({
+            roomName: roomInfo.roomName,
+            peopleCount: roomInfo.peopleCount,
+            owner: roomInfo.owner
+        }));
+        // for (let room in d) {
+        //     list.push({
+        //         room,
+        //         count: d[room]
+        //     })
+        // }
         store.dispatch(roomAction.updateRoomList(list));
     });
     socket.on('roomInfo', d => {
-        store.dispatch(roomAction.setRoomPeople(d));
+        store.dispatch(roomAction.setRoomInfo(d));
     });
     socket.on('peopleEnterRoom', people => {
         store.dispatch(roomAction.addRoomPeople(people));

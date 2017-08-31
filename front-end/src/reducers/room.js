@@ -4,7 +4,8 @@ let initialRoomList = [];
 
 let initialMyRoom = {
     name: '',
-    peopleList: [] // [{id: String, info: Object}]
+    owner: null,
+    people: [] // [{id: String, info: Object}]
 };
 
 export default combineReducers({
@@ -22,23 +23,24 @@ export default combineReducers({
                 return Object.assign({}, state, {
                     name: action.name
                 });
-            case 'SET_ROOM_PEOPLE':
+            case 'SET_ROOM_INFO':
                 return Object.assign({}, state, {
-                    peopleList: action.peopleList
+                    people: action.people,
+                    owner: action.owner,
                 });
             case 'ADD_ROOM_PEOPLE':
             {
                 let newState = Object.assign({}, state);
-                newState.peopleList = newState.peopleList.slice();
+                newState.people = newState.people.slice();
                 let { id, info } = action.people;
-                newState.peopleList.push({ id, info });
+                newState.people.push({ id, info });
                 return newState;
             }
             case 'DEL_ROOM_PEOPLE':
             {
                 let newState = Object.assign({}, state);
                 let { id, info } = action.people;
-                newState.peopleList = newState.peopleList.filter(item => item.id !== id);
+                newState.people = newState.people.filter(item => item.id !== id);
                 return newState;
             }
             default:

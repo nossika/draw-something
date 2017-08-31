@@ -6,9 +6,10 @@ export const setRoom = (name) => ({
     type: 'SET_ROOM',
     name
 });
-export const setRoomPeople = (peopleList) => ({
-    type: 'SET_ROOM_PEOPLE',
-    peopleList
+export const setRoomInfo = (roomInfo) => ({
+    type: 'SET_ROOM_INFO',
+    people: roomInfo.people,
+    owner: roomInfo.owner
 });
 export const addRoomPeople = (people) => ({
     type: 'ADD_ROOM_PEOPLE',

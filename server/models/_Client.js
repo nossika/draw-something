@@ -34,10 +34,9 @@ const handler = {
 
         this.room = ROOMS[roomName];
         this.room.peopleEnter(this);
-
         okCallback(cb);
     },
-    leaveRoom ({}, cb) { // people leave
+    leaveRoom (data, cb) { // people leave
         if (!this.room) {
             failCallback(cb, 'you\'re not in a room!');
             return;
@@ -62,7 +61,7 @@ const handler = {
         });
         okCallback(cb);
     },
-    gameStart ({}, cb) { // game start
+    gameStart (data, cb) { // game start
         let room = this.room;
         if (!room) {
             failCallback(cb, 'you\'re not in a room!');
@@ -112,15 +111,15 @@ const handler = {
 
 module.exports = class Client {
     constructor ({
-        io
+        client
     }) {
-        this.id = io.id;
-        this.io = io;
+        this.id = client.id;
+        this.io = client;
         this.info = {};
         this.room = null;
 
         for (let event in handler) {
-            io.on(event, handler[event].bind(this));
+            client.on(event, handler[event].bind(this));
         }
     }
     broadcastInRoom ({
