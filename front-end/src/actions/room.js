@@ -2,12 +2,10 @@ export const updateRoomList = (roomList) => ({
     type: 'UPDATE_ROOM_LIST',
     roomList
 });
-export const setRoom = (name) => ({
-    type: 'SET_ROOM',
-    name
-});
+
 export const setRoomInfo = (roomInfo) => ({
     type: 'SET_ROOM_INFO',
+    roomName: roomInfo.roomName,
     people: roomInfo.people,
     owner: roomInfo.owner
 });

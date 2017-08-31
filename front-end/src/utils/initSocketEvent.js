@@ -23,16 +23,20 @@ export default (socket) => {
             peopleCount: roomInfo.peopleCount,
             owner: roomInfo.owner
         }));
-        // for (let room in d) {
-        //     list.push({
-        //         room,
-        //         count: d[room]
-        //     })
-        // }
         store.dispatch(roomAction.updateRoomList(list));
     });
     socket.on('roomInfo', d => {
-        store.dispatch(roomAction.setRoomInfo(d));
+        let info = {
+            people: d.people,
+            owner: d.owner
+        };
+        store.dispatch(roomAction.setRoomInfo(info));
+    });
+    socket.on('roomOwnerChanged', d => {
+        let info = {
+            owner: d.owner
+        };
+        store.dispatch(roomAction.setRoomInfo(info));
     });
     socket.on('peopleEnterRoom', people => {
         store.dispatch(roomAction.addRoomPeople(people));

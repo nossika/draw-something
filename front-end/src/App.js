@@ -22,11 +22,11 @@ export default class App extends Component {
                     <Switch>
                         <Route path="/" exact component={ AsyncComponent(() => import('containers/Home')) }/>
                         <Route
-                            path="/:room"
+                            path="/:roomName"
                             render={
                                 ({ match }) => {
                                     const Room = AsyncComponent(() => import('containers/Room'));
-                                    return <Room key={ match.params.room } room={ match.params.room }/>
+                                    return <Room key={ match.params.roomName } roomName={ match.params.roomName }/>
                                 }
                             }
                         />

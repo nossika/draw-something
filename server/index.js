@@ -5,8 +5,8 @@ const router = new koaRouter();
 const IO = require('socket.io')();
 
 global.IO = IO;
-global.ROOMS = {};
-global.CLIENTS = {};
+global.ROOMS = new Map();
+global.CLIENTS = new Map();
 
 const initSocketEvent = require('./utils/initSocketEvent');
 

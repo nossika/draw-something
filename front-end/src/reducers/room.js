@@ -19,15 +19,14 @@ export default combineReducers({
     },
     myRoom (state = initialMyRoom, action) {
         switch (action.type) {
-            case 'SET_ROOM':
-                return Object.assign({}, state, {
-                    name: action.name
-                });
             case 'SET_ROOM_INFO':
-                return Object.assign({}, state, {
-                    people: action.people,
-                    owner: action.owner,
-                });
+                return Object.assign(
+                    {},
+                    state,
+                    action.roomName !== undefined ? { roomName: action.roomName} : {},
+                    action.people !== undefined ? { people: action.people} : {},
+                    action.owner !== undefined ? { owner: action.owner} : {},
+                );
             case 'ADD_ROOM_PEOPLE':
             {
                 let newState = Object.assign({}, state);

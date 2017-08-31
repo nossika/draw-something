@@ -35,7 +35,7 @@ export default class Home extends Component {
                             key={roomName}
                         >
                             <Link to={'/' + roomName}>
-                                { roomName }: { peopleCount }, owner: { owner ? '-' : owner.id }
+                                { roomName }: { peopleCount }, owner: { owner ? owner.id : '-' }
                             </Link>
                         </div>
                     ))
@@ -56,8 +56,8 @@ export default class Home extends Component {
         }
     }
     componentDidMount () {
-        let { setRoom } = this.props;
+        let { setRoomInfo } = this.props;
         socket.emit('leaveRoom');
-        setRoom('');
+        setRoomInfo({ roomName: '' });
     }
 }

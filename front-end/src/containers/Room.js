@@ -9,27 +9,27 @@ import * as roomActions from 'actions/room';
     state => ({
         myRoom: state.room.myRoom
     }),
-
     dispatch => bindActionCreators({...roomActions}, dispatch)
 )
 export default class Room extends Component {
     static propTypes = {
-        room: PropTypes.string.isRequired
+        roomName: PropTypes.string.isRequired
     };
     render () {
-        let { room, myRoom } = this.props;
+        let { myRoom } = this.props;
         return (
             <section>
-                <div>room: { myRoom.name }</div>
+                <div>roomName: { myRoom.roomName }</div>
                 <div>count: { myRoom.people.length }</div>
+                <div>owner: { JSON.stringify(myRoom.owner) }</div>
                 <div>list: { JSON.stringify(myRoom.people) }</div>
             </section>
         )
     }
     componentDidMount () {
-        let { room, setRoom } = this.props;
-        socket.emit('enterRoom', room, () => {
-            setRoom(room);
+        let { roomName, setRoomInfo } = this.props;
+        socket.emit('enterRoom', roomName, () => {
+            setRoomInfo({ roomName });
         }); // todo 处理此时socket还未连接上的情况
 
     }

@@ -3,10 +3,9 @@ const ROOMS = global.ROOMS;
 const util = {
     getRoomList () {
         let list = [];
-        for (let roomName in ROOMS) {
-            let room = ROOMS[roomName];
+        for (let room of ROOMS.values()) {
             list.push({
-                roomName,
+                roomName: room.name,
                 peopleCount: room.clients.size,
                 owner: util.clientInfo(room.owner)
             });
@@ -14,7 +13,7 @@ const util = {
         return list;
     },
     getRoomInfo (roomName) {
-        let room = ROOMS[roomName];
+        let room = ROOMS.get(roomName);
         return {
             people: Array.from(room.clients).map(client => (util.clientInfo(client))),
             owner: util.clientInfo(room.owner)

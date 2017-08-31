@@ -25,14 +25,15 @@ const handler = {
 
         if (this.room) this.room.peopleLeave(this);
 
-        if (!ROOMS[roomName]) {
-            ROOMS[roomName] = new Room({ name: roomName });
-            ROOMS[roomName].on('roomEmpty', room => {
-                Reflect.deleteProperty(ROOMS, room.name);
+        if (!ROOMS.has(roomName)) {
+            let room = new Room({ name: roomName });
+            room.on('roomEmpty', room => {
+                ROOMS.delete(room.name);
             });
+            ROOMS.set(roomName, room);
         }
 
-        this.room = ROOMS[roomName];
+        this.room = ROOMS.get(roomName);
         this.room.peopleEnter(this);
         okCallback(cb);
     },
