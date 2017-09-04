@@ -10,6 +10,7 @@ module.exports = (IO) => {
         CLIENTS.set(client.id, new Client({
             client
         }));
+        client.emit('userInfo', util.clientInfo(client));
         client.emit('roomList', util.getRoomList());
         client.on('disconnect', () => {
             CLIENTS.delete(client.id);

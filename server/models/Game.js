@@ -1,4 +1,3 @@
-
 let words = ['asd', 'zzz', 'asd', 'zzzz'];
 
 

@@ -1,5 +1,5 @@
 const util = require('../utils');
-const Client = require('./_Client.js');
+const Client = require('./Client.js');
 
 module.exports = class Room {
     constructor ({

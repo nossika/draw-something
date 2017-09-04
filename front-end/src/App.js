@@ -8,16 +8,18 @@ import * as networkActions from 'actions/network';
 @connect(
     state => ({
         loadingStatus: state.network.loadingStatus,
-        webSocketStatus: state.network.webSocketStatus
+        webSocketStatus: state.network.webSocketStatus,
+        userInfo: state.user.info
     }),
     dispatch => bindActionCreators({...networkActions}, dispatch)
 )
 export default class App extends Component {
     render () {
-        const { loadingStatus, webSocketStatus, loading, loaded, wsConnect, wsDisconnect } = this.props;
+        const { loadingStatus, webSocketStatus, loading, loaded, wsConnect, wsDisconnect, userInfo } = this.props;
         return (
             <section>
                 <div>webSocketStatus: { String(webSocketStatus) }</div>
+                <div>myId: { userInfo.id }</div>
                 <Router>
                     <Switch>
                         <Route path="/" exact component={ AsyncComponent(() => import('containers/Home')) }/>

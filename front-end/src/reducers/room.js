@@ -17,7 +17,7 @@ export default combineReducers({
                 return state;
         }
     },
-    myRoom (state = initialMyRoom, action) {
+    currentRoom (state = initialMyRoom, action) {
         switch (action.type) {
             case 'SET_ROOM_INFO':
                 return Object.assign(

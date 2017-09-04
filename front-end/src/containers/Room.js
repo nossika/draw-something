@@ -7,7 +7,8 @@ import * as roomActions from 'actions/room';
 
 @connect(
     state => ({
-        myRoom: state.room.myRoom
+        currentRoom: state.room.currentRoom,
+        isRoomOwner: state.room.currentRoom.owner && state.user.info.id === state.room.currentRoom.owner.id
     }),
     dispatch => bindActionCreators({...roomActions}, dispatch)
 )
@@ -16,13 +17,14 @@ export default class Room extends Component {
         roomName: PropTypes.string.isRequired
     };
     render () {
-        let { myRoom } = this.props;
+        let { currentRoom, isRoomOwner } = this.props;
         return (
             <section>
-                <div>roomName: { myRoom.roomName }</div>
-                <div>count: { myRoom.people.length }</div>
-                <div>owner: { JSON.stringify(myRoom.owner) }</div>
-                <div>list: { JSON.stringify(myRoom.people) }</div>
+                <div>roomName: { currentRoom.roomName }</div>
+                <div>count: { currentRoom.people.length }</div>
+                <div>owner: { JSON.stringify(currentRoom.owner) }</div>
+                <div>isRoomOwner: { String(isRoomOwner) }</div>
+                <div>list: { JSON.stringify(currentRoom.people) }</div>
             </section>
         )
     }
@@ -34,3 +36,4 @@ export default class Room extends Component {
 
     }
 }
+

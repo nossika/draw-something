@@ -1,8 +1,10 @@
 import store from '../reducers';
 import * as roomAction from 'actions/room';
 import * as networkActions from 'actions/network';
+import * as userActions from 'actions/user';
 
 export default (socket) => {
+    // main
     socket.on('connect', () => {
         store.dispatch(networkActions.wsConnect());
     });
@@ -12,11 +14,15 @@ export default (socket) => {
     socket.on('reconnect', () => {
         console.log('reconnect'); // todo 断线重连时重进房间
         let state = store.getState();
-        let roomName = state.room.myRoom.name;
+        let roomName = state.room.currentRoom.name;
         if (roomName) {
             socket.emit('enterRoom', roomName);
         }
     });
+    socket.on('userInfo', d => {
+        store.dispatch(userActions.setUserInfo(d));
+    });
+    // room
     socket.on('roomList', d => {
         let list = d.map(roomInfo => ({
             roomName: roomInfo.roomName,
@@ -44,4 +50,7 @@ export default (socket) => {
     socket.on('peopleLeaveRoom', people => {
         store.dispatch(roomAction.delRoomPeople(people));
     });
+    // game
+
+
 }
