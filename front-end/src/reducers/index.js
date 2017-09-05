@@ -3,11 +3,13 @@ import { createStore } from 'redux';
 import network from './network';
 import room from './room';
 import user from './user';
+import game from './game';
 
 export default createStore(
     combineReducers({
         network,
         room,
-        user
+        user,
+        game
     })
 )

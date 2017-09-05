@@ -2,6 +2,7 @@ import store from '../reducers';
 import * as roomAction from 'actions/room';
 import * as networkActions from 'actions/network';
 import * as userActions from 'actions/user';
+import * as gameActions from 'actions/game';
 
 export default (socket) => {
     // main
@@ -51,6 +52,19 @@ export default (socket) => {
         store.dispatch(roomAction.delRoomPeople(people));
     });
     // game
-
-
+    socket.on('setGameStatus', status => {
+        store.dispatch(gameActions.setGameStatus(status));
+    });
+    socket.on('setGameCountDown', countDown => {
+        store.dispatch(gameActions.setGameCountDown(countDown));
+    });
+    socket.on('setGameBanker', banker => {
+        store.dispatch(gameActions.setGameBanker(banker));
+    });
+    socket.on('setGamePlayers', players => {
+        store.dispatch(gameActions.setGamePlayers(players));
+    });
+    socket.on('updateGamePlayerScore', ({ playerId, score }) => {
+        store.dispatch(gameActions.updateGamePlayerScore({ playerId, score }));
+    });
 }

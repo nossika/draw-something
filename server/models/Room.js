@@ -13,6 +13,7 @@ module.exports = class Room {
     }
     peopleEnter (client) {
         // if (client.constructor !== Client) return; // validate client
+        console.log(client, this, 'peopleEnter');
         this.clients.add(client);
         this.broadcast({
             channel: 'peopleEnterRoom',
@@ -30,10 +31,13 @@ module.exports = class Room {
         if (this.clients.size === 0) {
             this._emit('roomEmpty', this);
         } else if (client === this.owner) {
-            for (let _client of this.clients.values()) {
-                this.setOwner(_client);
+            for (let firstClient of this.clients.values()) {
+                this.setOwner(firstClient);
                 break;
             }
+        }
+        if (this.game) {
+            this.game.peopleLeave(client);
         }
 
         this.broadcast({

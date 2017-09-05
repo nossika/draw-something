@@ -1,7 +1,6 @@
 import { combineReducers } from 'redux';
 
 let initialLoadingStatus = false;
-
 let initialWebSocketStatus = false;
 
 export default combineReducers({

@@ -1,7 +1,6 @@
 import { combineReducers } from 'redux';
 
 let initialRoomList = [];
-
 let initialMyRoom = {
     name: '',
     owner: null,

@@ -2,24 +2,10 @@ const ROOMS = global.ROOMS;
 const Room = require('./Room');
 const Game = require('./Game');
 
-const okCallback = (cb) => {
-    typeof cb === 'function' && cb({
-        ok: 1,
-        time: Date.now()
-    });
-};
-const failCallback = (cb, msg) => {
-    typeof cb === 'function' && cb({
-        ok: 0,
-        msg,
-        time: Date.now()
-    });
-};
-
 const handler = {
     enterRoom (roomName, cb) { // people enter
         if (!roomName) {
-            failCallback(cb, 'invalid room name!');
+            this.emitErrorMsg({ cb, msg: 'invalid room name!' });
             return;
         }
 
@@ -35,24 +21,24 @@ const handler = {
 
         this.room = ROOMS.get(roomName);
         this.room.peopleEnter(this);
-        okCallback(cb);
+        this.emitSuccessMsg({ cb });
     },
     leaveRoom (data, cb) { // people leave
         if (!this.room) {
-            failCallback(cb, 'you\'re not in a room!');
+            this.emitErrorMsg({ cb, msg: 'you\'re not in a room!' });
             return;
         }
         this.room.peopleLeave(this);
         this.room = null;
-        okCallback(cb);
+        this.emitSuccessMsg({ cb });
     },
     setUserInfo (info, cb) { // set user info
         Object.assign(this.info, info);
-        okCallback(cb);
+        this.emitSuccessMsg({ cb });
     },
     sendRoomMessage (message, cb) { // send message in room
         if (!this.room) {
-            failCallback(cb, 'you\'re not in a room!');
+            this.emitErrorMsg({ cb, msg: 'you\'re not in a room!' });
             return;
         }
         this.room.broadcast({
@@ -60,41 +46,39 @@ const handler = {
             data: { message },
             sender: this
         });
-        okCallback(cb);
+        this.emitSuccessMsg({ cb });
     },
-    gameStart (data, cb) { // game start
+    startGame (data, cb) { // game start
         let room = this.room;
         if (!room) {
-            failCallback(cb, 'you\'re not in a room!');
+            this.emitErrorMsg({ cb, msg: 'you\'re not in a room!' });
             return;
         }
         if (room.owner !== this) {
-            failCallback(cb, 'you\'re not the room owner!');
+            this.emitErrorMsg({ cb, msg: 'you\'re not the room owner!' });
             return;
         }
         if (room.game) {
-            failCallback(cb, 'game already start!');
+            this.emitErrorMsg({ cb, msg: 'game already start!' });
             return;
         }
         room.game = new Game({
-            players: room.client,
-            room,
-            roundTime: 60
+            clients: room.clients,
         });
         room.game.gameStart();
 
         room.game.on('gameEnd', () => {
             room.game = null;
         });
-        okCallback(cb);
+        this.emitSuccessMsg({ cb });
     },
     drawPicture (data, cb) {
         if (!this.room) {
-            failCallback(cb, 'you\'re not in a room!');
+            this.emitErrorMsg({ cb, msg: 'you\'re not in a room!' });
             return;
         }
         if (!this.room.game) {
-            failCallback(cb, 'you\'re not in a game!');
+            this.emitErrorMsg({ cb, msg: 'you\'re not in a game!' });
             return;
         }
         this.room.broadcast({
@@ -102,7 +86,7 @@ const handler = {
             data,
             sender: this
         });
-        okCallback(cb);
+        this.emitSuccessMsg({ cb });
     },
     disconnect () { // user disconnect
         this.room && this.room.peopleLeave(this);
@@ -122,6 +106,20 @@ module.exports = class Client {
         for (let event in handler) {
             client.on(event, handler[event].bind(this));
         }
+    }
+    emitSuccessMsg ({ msg, cb }) {
+        typeof cb === 'function' && cb({
+            ok: 1,
+            time: Date.now()
+        });
+    }
+    emitErrorMsg ({ msg, cb }) {
+        this.io.emit('errorMsg', msg);
+        typeof cb === 'function' && cb({
+            ok: 0,
+            msg,
+            time: Date.now()
+        });
     }
     broadcastInRoom ({
         channel,

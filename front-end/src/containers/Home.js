@@ -19,7 +19,7 @@ export default class Home extends Component {
     render () {
         const { roomList } = this.props;
         return (
-            <div>
+            <section>
                 <div>hello !</div>
                 <div>
                     <span>enter room name</span>
@@ -40,7 +40,7 @@ export default class Home extends Component {
                         </div>
                     ))
                 }
-            </div>
+            </section>
 
         )
     }
