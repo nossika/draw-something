@@ -7,6 +7,7 @@ module.exports = class Game {
             roundTime = 5,
             pendingTime = 3,
             clients,
+            scoreConfig = [5, 3, 1],
         }) {
 
         this._clients = clients;
@@ -31,6 +32,8 @@ module.exports = class Game {
         this.roundTime = roundTime;
 
         this.word = '';
+        this.wordMatched = 0;
+        this.scoreConfig = scoreConfig;
 
         this._roundTimer = 0;
         this._roundCountDown = 0;
@@ -63,8 +66,11 @@ module.exports = class Game {
     matchWord (word, client) {
         if (this.word && word === this.word) {
             console.log('matched!');
-
-            this.roundEnd();
+            this.players[client.id].score += this.scoreConfig[this.wordMatched];
+            this.wordMatched++;
+            if (this.wordMatched >= this.scoreConfig.length || this.wordMatched >= this._clients.size) {
+                this.roundEnd();
+            }
         }
     }
     roundStart () {
@@ -78,6 +84,7 @@ module.exports = class Game {
             data: util.clientInfo(this.banker)
         });
         this._roundCountDown = this.roundTime;
+        this.wordMatched = 0;
         clearInterval(this._roundTimer);
         this._roundTimer = setInterval(() => {
             this._roundCountDown--;
