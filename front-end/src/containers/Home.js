@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import { Link } from 'react-router-dom';
 import * as roomActions from 'actions/room';
 import history from 'utils/history';
-import socket from 'network/ws';
+import handler from 'utils/handler';
 
 @connect(
     state => ({
@@ -25,7 +25,14 @@ export default class Home extends Component {
                     <span>enter room name</span>
                     <input
                         value={this.state.roomInputValue}
-                        onChange={::this.roomInputChange}
+                        onChange={
+                            e => {
+                                let roomInputValue = e.target.value;
+                                this.setState({
+                                    roomInputValue
+                                });
+                            }
+                        }
                         onKeyDown={::this.enterRoom}
                     />
                 </div>
@@ -44,12 +51,6 @@ export default class Home extends Component {
 
         )
     }
-    roomInputChange (e) {
-        let roomInputValue = e.target.value;
-        this.setState({
-            roomInputValue
-        });
-    }
     enterRoom (e) {
         if (e.keyCode === 13) {
             history.push('/' + this.state.roomInputValue);
@@ -57,7 +58,7 @@ export default class Home extends Component {
     }
     componentDidMount () {
         let { setRoomInfo } = this.props;
-        socket.emit('leaveRoom');
+        handler.leaveRoom();
         setRoomInfo({ roomName: '' });
     }
 }

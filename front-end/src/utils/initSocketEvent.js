@@ -21,21 +21,25 @@ export default (socket) => {
         }
     });
     socket.on('userInfo', d => {
-        store.dispatch(userActions.setUserInfo(d));
+        store.dispatch(userActions.setUserInfo({
+            id: d.id,
+            info: d.info || {}
+        }));
     });
     // room
     socket.on('roomList', d => {
         let list = d.map(roomInfo => ({
             roomName: roomInfo.roomName,
             peopleCount: roomInfo.peopleCount,
-            owner: roomInfo.owner
+            owner: roomInfo.owner,
         }));
         store.dispatch(roomAction.updateRoomList(list));
     });
     socket.on('roomInfo', d => {
         let info = {
             people: d.people,
-            owner: d.owner
+            owner: d.owner,
+            messageList: d.messageList || [],
         };
         store.dispatch(roomAction.setRoomInfo(info));
     });
@@ -51,9 +55,20 @@ export default (socket) => {
     socket.on('peopleLeaveRoom', people => {
         store.dispatch(roomAction.delRoomPeople(people));
     });
+    socket.on('roomMessage', message => {
+        store.dispatch(roomAction.receiveRoomMessage({
+            timestamp: message.timestamp,
+            type: 'message',
+            by: message.sender || null,
+            content: message.content
+        }));
+    });
     // game
     socket.on('setGameStatus', status => {
         store.dispatch(gameActions.setGameStatus(status));
+        if (status === 'going') {
+            store.dispatch(gameActions.setGameWord(''));
+        }
     });
     socket.on('setGameCountDown', countDown => {
         store.dispatch(gameActions.setGameCountDown(countDown));
@@ -67,4 +82,8 @@ export default (socket) => {
     socket.on('updateGamePlayerScore', ({ playerId, score }) => {
         store.dispatch(gameActions.updateGamePlayerScore({ playerId, score }));
     });
+    socket.on('roundWord', word => {
+        store.dispatch(gameActions.setGameWord(word));
+    });
+
 }

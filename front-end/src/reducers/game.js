@@ -3,7 +3,8 @@ import { combineReducers } from 'redux';
 let initialStatus = 'await'; // Enum: 'pending' | 'going' | 'await'
 let initialCountDown = 0;
 let initialBanker = null;
-let initialPlayers = {}; // interface player { score: number; info: Object; }
+let initialPlayers = {}; // interface player { score: number, info: Object, id: String }
+let initialWord = '';
 
 export default combineReducers({
     status (state = initialStatus, action) {
@@ -40,11 +41,19 @@ export default combineReducers({
                 let player = newState[action.playerId];
                 newState[action.playerId] = Object.assign({}, player);
                 newState[action.playerId].score += action.score;
-                return state;
+                return newState;
             }
             default:
                 return state;
         }
-    }
+    },
+    word (state = initialWord, action) {
+        switch (action.type) {
+            case 'SET_GAME_WORD':
+                return action.word;
+            default:
+                return state;
+        }
+    },
 
 });

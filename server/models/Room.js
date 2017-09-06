@@ -54,13 +54,7 @@ module.exports = class Room {
             }
         });
     }
-    broadcast ({
-        channel,
-        data,
-        sender,
-        exclude,
-        callback,
-    }) {
+    broadcast ({ channel, data, sender, exclude, callback }) {
         exclude = exclude
             ? (Array.isArray(exclude)
                 ? exclude
@@ -72,8 +66,8 @@ module.exports = class Room {
             if (exclude.includes(client)) continue;
             client.io.emit(channel, Object.assign(
                 {},
-                sender ? util.clientInfo(sender) : {},
-                { date: Date.now() },
+                sender ? { sender: util.clientInfo(sender) } : {},
+                { timestamp: Date.now() },
                 data || {},
             ), callback);
         }

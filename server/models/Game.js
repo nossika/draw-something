@@ -1,13 +1,17 @@
 const util = require('../utils');
 
-let words = ['asd', 'zzz', 'asd', 'zzzz'];
+function pickWord (wordList) {
+    return wordList.splice(Math.random() * wordList.length | 0, 1)[0]
+}
 
 module.exports = class Game {
     constructor ({
             roundTime = 5,
             pendingTime = 3,
             clients,
-            scoreConfig = [5, 3, 1],
+            wordMatchScore = [5, 3, 1],
+            bankerScore = 3,
+            wordList = ['asd', 'zzz', 'asd', 'zzzz', 'zxc', 'ccccc', 'c22'],
         }) {
 
         this._clients = clients;
@@ -32,17 +36,15 @@ module.exports = class Game {
         this.roundTime = roundTime;
 
         this.word = '';
-        this.wordMatched = 0;
-        this.scoreConfig = scoreConfig;
+        this.wordList = wordList;
+        this.wordMatched = [];
+        this.wordMatchScore = wordMatchScore;
 
         this._roundTimer = 0;
-        this._roundCountDown = 0;
+        this.roundCountDown = 0;
         this._handler = {};
     }
-    broadcast ({
-        channel,
-        data
-    }) {
+    broadcast ({ channel, data }) {
         for (let client of this._clients.values()) {
             client.io.emit(channel, data);
         }
@@ -50,25 +52,33 @@ module.exports = class Game {
     peopleLeave (client) {
         this._clients.delete(client);
         Reflect.deleteProperty(this.players, client.id);
-        this.broadcast({
-            channel: 'setGamePlayers',
-            data: this.players
-        });
+        this.broadcast({ channel: 'setGamePlayers', data: this.players });
     }
     gameStart () {
-        this.broadcast({
-            channel: 'setGamePlayers',
-            data: this.players
-        });
-
+        this.broadcast({ channel: 'setGamePlayers', data: this.players });
         this.roundStart();
     }
     matchWord (word, client) {
+        if (this.status !== 'going') return;
         if (this.word && word === this.word) {
-            console.log('matched!');
-            this.players[client.id].score += this.scoreConfig[this.wordMatched];
-            this.wordMatched++;
-            if (this.wordMatched >= this.scoreConfig.length || this.wordMatched >= this._clients.size) {
+            let playerId = client.id;
+            let score = this.wordMatchScore[this.wordMatched.length];
+
+            // block banker
+            if (client === this.banker) return;
+
+            // block duplicate player
+            if (this.wordMatched.includes(playerId)) return;
+
+            this.players[client.id].score += score;
+            this.broadcast({
+                channel: 'updateGamePlayerScore',
+                data: { playerId: client.id, score }
+            });
+            this.wordMatched.push(playerId);
+
+            // if all player matched or scores run out
+            if (this.wordMatched.length >= this.wordMatchScore.length || this.wordMatched.length >= this._clients.size) {
                 this.roundEnd();
             }
         }
@@ -83,16 +93,18 @@ module.exports = class Game {
             channel: 'setGameBanker',
             data: util.clientInfo(this.banker)
         });
-        this._roundCountDown = this.roundTime;
-        this.wordMatched = 0;
+        this.word = pickWord(this.wordList);
+        this.banker.io.emit('roundWord', this.word);
+        this.roundCountDown = this.roundTime;
+        this.wordMatched = [];
         clearInterval(this._roundTimer);
         this._roundTimer = setInterval(() => {
-            this._roundCountDown--;
+            this.roundCountDown--;
             this.broadcast({
                 channel: 'setGameCountDown',
-                data: this._roundCountDown
+                data: this.roundCountDown
             });
-            if (this._roundCountDown <= 0) {
+            if (this.roundCountDown <= 0) {
                 clearInterval(this._roundTimer);
                 this.roundEnd();
             }
@@ -103,6 +115,10 @@ module.exports = class Game {
         this.broadcast({
             channel: 'setGameStatus',
             data: this.status
+        });
+        this.broadcast({
+            channel: 'roundWord',
+            data: this.word
         });
         clearInterval(this._roundTimer);
 

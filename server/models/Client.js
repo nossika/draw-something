@@ -36,16 +36,20 @@ const handler = {
         Object.assign(this.info, info);
         this.emitSuccessMsg({ cb });
     },
-    sendRoomMessage (message, cb) { // send message in room
+    sendRoomMessage (content, cb) { // send message in room
         if (!this.room) {
             this.emitErrorMsg({ cb, msg: 'you\'re not in a room!' });
             return;
         }
         this.room.broadcast({
-            channel: 'message',
-            data: { message },
+            channel: 'roomMessage',
+            data: { content },
             sender: this
         });
+        let game = this.room.game;
+        if (game) {
+            game.matchWord(content, this);
+        }
         this.emitSuccessMsg({ cb });
     },
     startGame (data, cb) { // game start
@@ -62,6 +66,7 @@ const handler = {
             this.emitErrorMsg({ cb, msg: 'game already start!' });
             return;
         }
+        // game
         room.game = new Game({
             clients: room.clients,
         });
@@ -70,6 +75,7 @@ const handler = {
         room.game.on('gameEnd', () => {
             room.game = null;
         });
+
         this.emitSuccessMsg({ cb });
     },
     drawPicture (data, cb) {
@@ -110,7 +116,7 @@ module.exports = class Client {
     emitSuccessMsg ({ msg, cb }) {
         typeof cb === 'function' && cb({
             ok: 1,
-            time: Date.now()
+            timestamp: Date.now()
         });
     }
     emitErrorMsg ({ msg, cb }) {
@@ -118,7 +124,7 @@ module.exports = class Client {
         typeof cb === 'function' && cb({
             ok: 0,
             msg,
-            time: Date.now()
+            timestamp: Date.now()
         });
     }
     broadcastInRoom ({

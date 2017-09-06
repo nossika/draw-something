@@ -4,11 +4,31 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux'
 import * as gameActions from 'actions/game';
 
+
+const renderRankings = (players) => {
+    let list = [];
+    for (let playerId in players) {
+        let player = players[playerId];
+        list.push(player);
+
+    }
+    list.sort((a, b) => a.score > b.score ? -1 : 1);
+    list = list.map(player => (
+        <div key={player.id}>
+            { player.id }: { player.score }
+        </div>
+    ));
+
+    return (
+        <div>
+            { list }
+        </div>
+    )
+};
+
 @connect(
     state => ({
-        countDown: state.game.countDown,
-        banker: state.game.banker,
-        players: state.game.players
+        game: state.game,
     }),
     dispatch => bindActionCreators({...gameActions}, dispatch)
 )
@@ -17,14 +37,15 @@ export default class Game extends Component {
         status: PropTypes.string.isRequired
     };
     render () {
-        let { status, countDown, banker, players } = this.props;
+        let { status, game } = this.props;
         return (
             <section>
                 <h1>game</h1>
+                <div>word: { game.word }</div>
                 <div>status: { status }</div>
-                <div>countDown: { countDown }</div>
-                <div>banker: { JSON.stringify(banker) }</div>
-                <div>players: { Object.keys(players) }</div>
+                <div>countDown: { game.countDown }</div>
+                <div>banker: { JSON.stringify(game.banker) }</div>
+                <div>rankings: { renderRankings(game.players) }</div>
             </section>
         );
     }
