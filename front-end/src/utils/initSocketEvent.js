@@ -3,6 +3,9 @@ import * as roomAction from 'actions/room';
 import * as networkActions from 'actions/network';
 import * as userActions from 'actions/user';
 import * as gameActions from 'actions/game';
+import Rx from 'rxjs/Rx';
+
+console.log(Rx);
 
 export default (socket) => {
     // main
@@ -49,11 +52,11 @@ export default (socket) => {
         };
         store.dispatch(roomAction.setRoomInfo(info));
     });
-    socket.on('peopleEnterRoom', people => {
-        store.dispatch(roomAction.addRoomPeople(people));
+    socket.on('peopleEnterRoom', message => {
+        store.dispatch(roomAction.addRoomPeople(message.sender));
     });
-    socket.on('peopleLeaveRoom', people => {
-        store.dispatch(roomAction.delRoomPeople(people));
+    socket.on('peopleLeaveRoom', message => {
+        store.dispatch(roomAction.delRoomPeople(message.sender));
     });
     socket.on('roomMessage', message => {
         store.dispatch(roomAction.receiveRoomMessage({

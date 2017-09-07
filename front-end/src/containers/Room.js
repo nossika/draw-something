@@ -9,9 +9,9 @@ import { getFormatTime } from 'utils/formatter';
 
 const renderMessageList = (messageList) => {
     let list = [];
-    messageList.forEach((message, index) => {
+    messageList.forEach(message => {
         list.push(
-            <div key={index}>
+            <div key={message.timestamp}>
                 <span>time:{ getFormatTime(message.timestamp) }</span>
                 <span>content: { message.content }</span>
                 <span>by: { JSON.stringify(message.by) }</span>
@@ -28,8 +28,8 @@ const renderMessageList = (messageList) => {
 @connect(
     state => ({
         currentRoom: state.room.currentRoom,
-        isRoomOwner: state.room.currentRoom.owner && state.user.info.id === state.room.currentRoom.owner.id,
         gameStatus: state.game.status,
+        user: state.user
     }),
     dispatch => bindActionCreators({...roomActions}, dispatch)
 )
@@ -41,14 +41,14 @@ export default class Room extends Component {
         messageInputValue: ''
     };
     render () {
-        let { currentRoom, isRoomOwner, gameStatus } = this.props;
+        let { currentRoom, gameStatus, user } = this.props;
+        let isRoomOwner = currentRoom.owner && user.info.id === currentRoom.owner.id;
         return (
             <section>
-                <div>roomName: { currentRoom.roomName }</div>
+                <div>roomName: { currentRoom.name }</div>
                 <div>count: { currentRoom.people.length }</div>
                 <div>owner: { JSON.stringify(currentRoom.owner) }</div>
                 <div>list: { JSON.stringify(currentRoom.people) }</div>
-
                 <div>
                     {
                         (() => {

@@ -28,3 +28,13 @@ export const setGameWord = word => ({
     type: 'SET_GAME_WORD',
     word
 });
+
+export const setCanvasData = canvasData => ({
+    type: 'SET_CANVAS_DATA',
+    canvasData
+});
+
+export const pushCanvasBrush = canvasPath => ({
+    type: 'PUSH_CANVAS_BRUSH',
+    canvasPath
+});

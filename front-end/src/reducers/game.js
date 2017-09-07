@@ -5,6 +5,8 @@ let initialCountDown = 0;
 let initialBanker = null;
 let initialPlayers = {}; // interface player { score: number, info: Object, id: String }
 let initialWord = '';
+let initialCanvasData = []; //
+
 
 export default combineReducers({
     status (state = initialStatus, action) {
@@ -55,5 +57,15 @@ export default combineReducers({
                 return state;
         }
     },
+    canvasData (state = initialCanvasData, action) {
+        switch (action.type) {
+            case 'SET_CANVAS_DATA':
+                return action.data;
+            case 'PUSH_CANVAS_BRUSH':
+                return state.concat(action.brush);
+            default:
+                return state;
+        }
+    }
 
 });

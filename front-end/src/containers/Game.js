@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux'
 import * as gameActions from 'actions/game';
-
+import Canvas from './Canvas';
 
 const renderRankings = (players) => {
     let list = [];
@@ -46,6 +46,7 @@ export default class Game extends Component {
                 <div>countDown: { game.countDown }</div>
                 <div>banker: { JSON.stringify(game.banker) }</div>
                 <div>rankings: { renderRankings(game.players) }</div>
+                <Canvas></Canvas>
             </section>
         );
     }
