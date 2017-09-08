@@ -5,6 +5,7 @@ import * as gameActions from 'actions/game';
 import Brush from 'utils/brush';
 import { Observable } from 'rxjs/Observable';
 import handler from 'utils/handler';
+import { canvasStroke$ } from 'flow';
 
 const colors = ['red', 'black', 'green'];
 
@@ -48,7 +49,8 @@ export default class Canvas extends Component {
     componentDidMount () {
         let { game } = this.props;
         this.brush = new Brush({ canvas: this.refs.canvas });
-        this.subscription = Observable
+        this.canvasStroke$$ = canvasStroke$.subscribe(e => console.log(e));
+        this.mouseEvent$$ = Observable
             .fromEvent(this.refs.canvas, 'mousedown')
             .do(e => { // beginPath on mousedown event
                 this.syncStroke({
@@ -77,7 +79,8 @@ export default class Canvas extends Component {
         this.brush.redraw(initialStrokes);
     }
     componentWillUnmount () {
-        this.subscription.unsubscribe();
+        this.mouseEvent$$.unsubscribe();
+        this.canvasStroke$$.unsubscribe();
     }
     componentWillUpdate (props) {
         // let strokes = props.game.canvasData.strokes;

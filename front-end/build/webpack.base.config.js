@@ -32,6 +32,7 @@ const config = {
             'containers': path.resolve(__dirname, '../src/containers'),
             'utils': path.resolve(__dirname, '../src/utils'),
             'network': path.resolve(__dirname, '../src/network'),
+            'flow': path.resolve(__dirname, '../src/flow'),
         }
     },
 };
