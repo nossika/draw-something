@@ -3,9 +3,7 @@ import * as roomAction from 'actions/room';
 import * as networkActions from 'actions/network';
 import * as userActions from 'actions/user';
 import * as gameActions from 'actions/game';
-import Rx from 'rxjs/Rx';
 
-console.log(Rx);
 
 export default (socket) => {
     // main
@@ -22,6 +20,9 @@ export default (socket) => {
         if (roomName) {
             socket.emit('enterRoom', roomName);
         }
+    });
+    socket.on('errorMsg', (d) => {
+        console.error(d);
     });
     socket.on('userInfo', d => {
         store.dispatch(userActions.setUserInfo({
@@ -88,5 +89,7 @@ export default (socket) => {
     socket.on('roundWord', word => {
         store.dispatch(gameActions.setGameWord(word));
     });
-
+    socket.on('canvasStroke', stroke => {
+        store.dispatch(gameActions.pushCanvasStroke(stroke));
+    });
 }

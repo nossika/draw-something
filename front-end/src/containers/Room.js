@@ -42,7 +42,7 @@ export default class Room extends Component {
     };
     render () {
         let { currentRoom, gameStatus, user } = this.props;
-        let isRoomOwner = currentRoom.owner && user.info.id === currentRoom.owner.id;
+        let isRoomOwner = currentRoom.owner && user.id === currentRoom.owner.id;
         return (
             <section>
                 <div>roomName: { currentRoom.name }</div>

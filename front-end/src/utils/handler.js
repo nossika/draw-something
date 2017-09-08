@@ -16,7 +16,7 @@ export default {
         store.dispatch(roomAction.setRoomInfo({ roomName: '' }));
     },
     sendRoomMessage (content) {
-        let userInfo = store.getState().user.info;
+        let userInfo = store.getState().user;
         socket.emit('sendRoomMessage', content, (res) => {
             if (!res.ok) return;
             store.dispatch(roomAction.receiveRoomMessage({
@@ -30,5 +30,8 @@ export default {
     },
     startGame () {
         socket.emit('startGame');
+    },
+    emitCanvasStroke (stroke) {
+        socket.emit('canvasStroke', stroke);
     }
 }

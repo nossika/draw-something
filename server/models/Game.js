@@ -6,7 +6,7 @@ function pickWord (wordList) {
 
 module.exports = class Game {
     constructor ({
-            roundTime = 5,
+            roundTime = 50,
             pendingTime = 3,
             clients,
             wordMatchScore = [5, 3, 1],

@@ -4,12 +4,14 @@ import { connect } from 'react-redux'
 import * as gameActions from 'actions/game';
 import Brush from 'utils/brush';
 import { Observable } from 'rxjs/Observable';
+import handler from 'utils/handler';
 
 const colors = ['red', 'black', 'green'];
 
 @connect(
     state => ({
         game: state.game,
+        user: state.user
     }),
     dispatch => bindActionCreators({...gameActions}, dispatch)
 )
@@ -29,7 +31,6 @@ export default class Canvas extends Component {
                             for (let color of colors) {
                                 list.push(
                                     <span key={color} onClick={() => {
-                                        console.log(color)
                                         this.syncStroke({ type: 'mode', mode: 'brush' });
                                         this.syncStroke({ type: 'color', color });
 
@@ -45,7 +46,7 @@ export default class Canvas extends Component {
         );
     }
     componentDidMount () {
-        let { pushCanvasStroke, game } = this.props;
+        let { game } = this.props;
         this.brush = new Brush({ canvas: this.refs.canvas });
         this.subscription = Observable
             .fromEvent(this.refs.canvas, 'mousedown')
@@ -83,9 +84,11 @@ export default class Canvas extends Component {
         // let brush = this.brush;
         // brush.redraw(strokes);
     }
-    syncStroke (stroke) {
-        let { pushCanvasStroke } = this.props;
+    syncStroke (stroke, fromServer) {
+        let { pushCanvasStroke, game, user } = this.props;
+        if (!fromServer && (game.status !== 'going' || !game.banker || game.banker.id !== user.id)) return;
         pushCanvasStroke(stroke);
         this.brush.draw(stroke);
+        !fromServer && handler.emitCanvasStroke(stroke);
     }
 }

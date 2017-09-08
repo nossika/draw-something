@@ -5,7 +5,7 @@ const Game = require('./Game');
 const handler = {
     enterRoom (roomName, cb) { // people enter
         if (!roomName) {
-            this.emitErrorMsg({ cb, msg: 'invalid room name!' });
+            this.emitErrorMsg({ cb, content: 'invalid room name!' });
             return;
         }
 
@@ -25,7 +25,7 @@ const handler = {
     },
     leaveRoom (data, cb) { // people leave
         if (!this.room) {
-            this.emitErrorMsg({ cb, msg: 'you\'re not in a room!' });
+            this.emitErrorMsg({ cb, content: 'you\'re not in a room!' });
             return;
         }
         this.room.peopleLeave(this);
@@ -38,7 +38,7 @@ const handler = {
     },
     sendRoomMessage (content, cb) { // send message in room
         if (!this.room) {
-            this.emitErrorMsg({ cb, msg: 'you\'re not in a room!' });
+            this.emitErrorMsg({ cb, content: 'you\'re not in a room!' });
             return;
         }
         this.room.broadcast({
@@ -55,15 +55,15 @@ const handler = {
     startGame (data, cb) { // game start
         let room = this.room;
         if (!room) {
-            this.emitErrorMsg({ cb, msg: 'you\'re not in a room!' });
+            this.emitErrorMsg({ cb, content: 'you\'re not in a room!' });
             return;
         }
         if (room.owner !== this) {
-            this.emitErrorMsg({ cb, msg: 'you\'re not the room owner!' });
+            this.emitErrorMsg({ cb, content: 'you\'re not the room owner!' });
             return;
         }
         if (room.game) {
-            this.emitErrorMsg({ cb, msg: 'game already start!' });
+            this.emitErrorMsg({ cb, content: 'game already start!' });
             return;
         }
         // game
@@ -78,17 +78,21 @@ const handler = {
 
         this.emitSuccessMsg({ cb });
     },
-    drawPicture (data, cb) {
+    canvasStroke (data, cb) {
         if (!this.room) {
-            this.emitErrorMsg({ cb, msg: 'you\'re not in a room!' });
+            this.emitErrorMsg({ cb, content: 'you\'re not in a room!' });
             return;
         }
         if (!this.room.game) {
-            this.emitErrorMsg({ cb, msg: 'you\'re not in a game!' });
+            this.emitErrorMsg({ cb, content: 'you\'re not in a game!' });
+            return;
+        }
+        if (this.room.game.banker !== this) {
+            this.emitErrorMsg({ cb, content: 'you\'re not game banker!' });
             return;
         }
         this.room.broadcast({
-            channel: 'drawPicture',
+            channel: 'canvasStroke',
             data,
             sender: this
         });
@@ -113,19 +117,21 @@ module.exports = class Client {
             client.on(event, handler[event].bind(this));
         }
     }
-    emitSuccessMsg ({ msg, cb }) {
+    emitSuccessMsg ({ content, cb }) {
         typeof cb === 'function' && cb({
             ok: 1,
+            content,
             timestamp: Date.now()
         });
     }
-    emitErrorMsg ({ msg, cb }) {
-        this.io.emit('errorMsg', msg);
-        typeof cb === 'function' && cb({
+    emitErrorMsg ({ content, cb }) {
+        let msg = {
             ok: 0,
-            msg,
+            content,
             timestamp: Date.now()
-        });
+        };
+        this.io.emit('errorMsg', msg);
+        typeof cb === 'function' && cb(msg);
     }
     broadcastInRoom ({
         channel,
