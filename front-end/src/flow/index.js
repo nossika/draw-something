@@ -1,4 +1,3 @@
-import { Observable } from 'rxjs/Observable';
-import { Subject } from 'rxjs/Subject';
+import Rx from 'rxjs/Rx';
 
-export const canvasStroke$ = new Subject();
+export const canvasStroke$ = new Rx.Subject();

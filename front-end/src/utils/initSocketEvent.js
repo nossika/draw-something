@@ -3,6 +3,7 @@ import * as roomAction from 'actions/room';
 import * as networkActions from 'actions/network';
 import * as userActions from 'actions/user';
 import * as gameActions from 'actions/game';
+
 import { canvasStroke$ } from 'flow';
 
 export default (socket) => {
@@ -91,6 +92,6 @@ export default (socket) => {
     });
     socket.on('canvasStroke', stroke => {
         canvasStroke$.next(stroke);
-        store.dispatch(gameActions.pushCanvasStroke(stroke));
+        // store.dispatch(gameActions.pushCanvasStroke(stroke));
     });
 }

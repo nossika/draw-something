@@ -3,7 +3,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux'
 import * as gameActions from 'actions/game';
 import Brush from 'utils/brush';
-import { Observable } from 'rxjs/Observable';
+import Rx from 'rxjs/Rx';
 import handler from 'utils/handler';
 import { canvasStroke$ } from 'flow';
 
@@ -49,8 +49,8 @@ export default class Canvas extends Component {
     componentDidMount () {
         let { game } = this.props;
         this.brush = new Brush({ canvas: this.refs.canvas });
-        this.canvasStroke$$ = canvasStroke$.subscribe(e => console.log(e));
-        this.mouseEvent$$ = Observable
+        this.canvasStroke$$ = canvasStroke$.subscribe(stroke => this.syncStroke(stroke, true));
+        this.mouseEvent$$ = Rx.Observable
             .fromEvent(this.refs.canvas, 'mousedown')
             .do(e => { // beginPath on mousedown event
                 this.syncStroke({
@@ -59,9 +59,9 @@ export default class Canvas extends Component {
                     type: 'begin'
                 });
             })
-            .switchMap(firstE => Observable
+            .switchMap(firstE => Rx.Observable
                 .fromEvent(this.refs.canvas, 'mousemove')
-                .takeUntil(Observable
+                .takeUntil(Rx.Observable
                     .fromEvent(document.body, 'mouseup')
                     .do(e => { // closePath on mouseup event
                         this.syncStroke({ type: 'close' });

@@ -94,7 +94,7 @@ module.exports = class Game {
             data: util.clientInfo(this.banker)
         });
         this.word = pickWord(this.wordList);
-        this.banker.io.emit('roundWord', this.word);
+        this.banker && this.banker.io.emit('roundWord', this.word);
         this.roundCountDown = this.roundTime;
         this.wordMatched = [];
         clearInterval(this._roundTimer);
