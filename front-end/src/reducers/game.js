@@ -5,8 +5,10 @@ let initialCountDown = 0;
 let initialBanker = null;
 let initialPlayers = {}; // interface player { score: number, info: Object, id: String }
 let initialWord = '';
-let initialCanvasData = []; //
-
+let initialCanvasData = {
+    size: [500, 500], // Number[]
+    strokes: [] // Object[]
+};
 
 export default combineReducers({
     status (state = initialStatus, action) {
@@ -60,9 +62,11 @@ export default combineReducers({
     canvasData (state = initialCanvasData, action) {
         switch (action.type) {
             case 'SET_CANVAS_DATA':
-                return action.data;
-            case 'PUSH_CANVAS_BRUSH':
-                return state.concat(action.brush);
+                return action.canvasData;
+            case 'PUSH_CANVAS_STROKE':
+                return Object.assign({}, state, {
+                    strokes: state.strokes.concat(action.stroke)
+                });
             default:
                 return state;
         }

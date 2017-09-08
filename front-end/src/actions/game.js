@@ -34,7 +34,7 @@ export const setCanvasData = canvasData => ({
     canvasData
 });
 
-export const pushCanvasBrush = canvasPath => ({
-    type: 'PUSH_CANVAS_BRUSH',
-    canvasPath
+export const pushCanvasStroke = stroke => ({
+    type: 'PUSH_CANVAS_STROKE',
+    stroke
 });
