@@ -3,8 +3,7 @@ import * as roomAction from 'actions/room';
 import * as networkActions from 'actions/network';
 import * as userActions from 'actions/user';
 import * as gameActions from 'actions/game';
-
-import { canvasStroke$ } from 'flow';
+import { canvasStroke$ } from 'flow/stroke';
 
 export default (socket) => {
     // main

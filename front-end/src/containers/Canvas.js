@@ -5,8 +5,7 @@ import * as gameActions from 'actions/game';
 import Brush from 'utils/brush';
 import Rx from 'rxjs/Rx';
 import handler from 'utils/handler';
-import { canvasStroke$ } from 'flow';
-
+import { canvasStroke$ } from 'flow/stroke';
 const colors = ['red', 'black', 'green'];
 
 @connect(
