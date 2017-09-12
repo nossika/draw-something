@@ -3,13 +3,19 @@ import * as roomAction from 'actions/room';
 import * as networkActions from 'actions/network';
 import * as userActions from 'actions/user';
 import * as gameActions from 'actions/game';
-import { canvasStroke$ } from 'flow/stroke';
+import { canvasStroke$, canvasReset$ } from 'flow/canvas';
 
 export default (socket) => {
     // main
     socket.on('connect', () => {
         store.dispatch(networkActions.wsConnect());
+        if (localStorage.getItem('clientId')) {
+            socket.emit('setClient', {
+                id: localStorage.getItem('clientId')
+            });
+        }
     });
+
     socket.on('disconnect', () => {
         store.dispatch(networkActions.wsDisconnect());
     });
@@ -25,6 +31,9 @@ export default (socket) => {
         console.error(d);
     });
     socket.on('userInfo', d => {
+        if (!localStorage.getItem('clientId')) {
+            localStorage.setItem('clientId', d.id);
+        }
         store.dispatch(userActions.setUserInfo({
             id: d.id,
             info: d.info || {}
@@ -70,8 +79,9 @@ export default (socket) => {
     // game
     socket.on('setGameStatus', status => {
         store.dispatch(gameActions.setGameStatus(status));
-        if (status === 'going') {
+        if (status === 'going') { // new round | game end
             store.dispatch(gameActions.setGameWord(''));
+            canvasReset$.next();
         }
     });
     socket.on('setGameCountDown', countDown => {

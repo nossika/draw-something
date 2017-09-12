@@ -62,7 +62,10 @@ export default combineReducers({
     canvasData (state = initialCanvasData, action) {
         switch (action.type) {
             case 'SET_CANVAS_DATA':
-                return action.canvasData;
+                return {
+                    size: action.canvasData.size !== undefined ? action.canvasData.size : state.size,
+                    strokes: action.canvasData.strokes !== undefined ? action.canvasData.strokes : state.strokes,
+                };
             case 'PUSH_CANVAS_STROKE':
                 return Object.assign({}, state, {
                     strokes: state.strokes.concat(action.stroke)

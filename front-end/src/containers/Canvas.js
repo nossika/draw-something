@@ -5,7 +5,7 @@ import * as gameActions from 'actions/game';
 import Brush from 'utils/brush';
 import Rx from 'rxjs/Rx';
 import handler from 'utils/handler';
-import { canvasStroke$ } from 'flow/stroke';
+import { canvasStroke$, canvasReset$ } from 'flow/canvas';
 const colors = ['red', 'black', 'green'];
 
 @connect(
@@ -49,6 +49,7 @@ export default class Canvas extends Component {
         let { game } = this.props;
         this.brush = new Brush({ canvas: this.refs.canvas });
         this.canvasStroke$$ = canvasStroke$.subscribe(stroke => this.syncStroke(stroke, true));
+        this.canvasReset$$ = canvasReset$.subscribe(() => this.resetCanvas());
         this.mouseEvent$$ = Rx.Observable
             .fromEvent(this.refs.canvas, 'mousedown')
             .do(e => { // beginPath on mousedown event
@@ -79,18 +80,24 @@ export default class Canvas extends Component {
     }
     componentWillUnmount () {
         this.mouseEvent$$.unsubscribe();
+        this.canvasReset$$.unsubscribe();
         this.canvasStroke$$.unsubscribe();
     }
-    componentWillUpdate (props) {
-        // let strokes = props.game.canvasData.strokes;
-        // let brush = this.brush;
-        // brush.redraw(strokes);
-    }
     syncStroke (stroke, fromServer) {
-        let { pushCanvasStroke, game, user } = this.props;
+        let { game, user, pushCanvasStroke } = this.props;
+
+        // if game is not going or you are not the banker, stroke event would be ignored
         if (!fromServer && (game.status !== 'going' || !game.banker || game.banker.id !== user.id)) return;
         pushCanvasStroke(stroke);
         this.brush.draw(stroke);
         !fromServer && handler.emitCanvasStroke(stroke);
+    }
+    resetCanvas () {
+        let { setCanvasData } = this.props;
+        setCanvasData({
+            size: [this.refs.canvas.width, this.refs.canvas.height],
+            strokes: []
+        });
+        this.brush.redraw();
     }
 }

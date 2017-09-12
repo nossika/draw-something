@@ -1,6 +1,7 @@
 const ROOMS = global.ROOMS;
 const Room = require('./Room');
 const Game = require('./Game');
+const words = require('../resource/words');
 
 const handler = {
     enterRoom (roomName, cb) { // people enter
@@ -31,6 +32,10 @@ const handler = {
         this.room.peopleLeave(this);
         this.room = null;
         this.emitSuccessMsg({ cb });
+    },
+    setClient (info, cb) {
+        console.log(info.id, 'setClient');
+        // this.id = this.io.id = info.id;
     },
     setUserInfo (info, cb) { // set user info
         Object.assign(this.info, info);
@@ -69,6 +74,7 @@ const handler = {
         // game
         room.game = new Game({
             clients: room.clients,
+            wordList: words.idiom
         });
         room.game.gameStart();
 

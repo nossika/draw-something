@@ -10,10 +10,12 @@ export default class Brush {
         this.ctx.lineWidth = lineWidth;
     }
     redraw (strokes) {
-        let { canvasWidth, canvasHeight } = this.ctx.canvas;
-        this.ctx.clearRect(0, 0, canvasWidth, canvasHeight);
-        for (let stroke of strokes) {
-            this.draw(stroke);
+        let { width, height } = this.ctx.canvas;
+        this.ctx.clearRect(0, 0, width, height);
+        if (strokes) {
+            for (let stroke of strokes) {
+                this.draw(stroke);
+            }
         }
     }
     draw (stroke) {

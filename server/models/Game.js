@@ -7,12 +7,12 @@ function pickWord (wordList) {
 
 module.exports = class Game {
     constructor ({
-            roundTime = 50,
+            roundTime = 10,
             pendingTime = 5,
             clients,
             wordMatchScore = [5, 3, 1],
             bankerScore = 3,
-            wordList = ['asd', 'zzz', 'asd', 'zzzz', 'zxc', 'ccccc', 'c22'],
+            wordList,
         }) {
 
         this._clients = clients;
@@ -37,7 +37,7 @@ module.exports = class Game {
         this.roundTime = roundTime;
 
         this.word = '';
-        this.wordList = wordList;
+        this.wordList = wordList.slice();
         this.wordMatched = [];
         this.wordMatchScore = wordMatchScore;
 
@@ -85,6 +85,8 @@ module.exports = class Game {
         }
     }
     roundStart () {
+        this._roundTime$$ && this._roundTime$$.unsubscribe();
+
         this.status = 'going';
         this.broadcast({
             channel: 'setGameStatus',
@@ -97,20 +99,6 @@ module.exports = class Game {
         this.word = pickWord(this.wordList);
         this.banker && this.banker.io.emit('roundWord', this.word);
         this.wordMatched = [];
-        this._roundTime$$ && this._roundTime$$.unsubscribe();
-        // clearInterval(this._roundTimer);
-        // this.roundCountDown = this.roundTime;
-        // this._roundTimer = setInterval(() => {
-        //     this.roundCountDown--;
-        //     this.broadcast({
-        //         channel: 'setGameCountDown',
-        //         data: this.roundCountDown
-        //     });
-        //     if (this.roundCountDown <= 0) {
-        //         clearInterval(this._roundTimer);
-        //         this.roundEnd();
-        //     }
-        // }, 1000);
 
         this.roundCountDown = this.roundTime;
         this._roundTime$$ = Rx.Observable
@@ -129,6 +117,8 @@ module.exports = class Game {
             .subscribe();
     }
     roundEnd () {
+        this._roundTime$$ && this._roundTime$$.unsubscribe();
+
         this.status = 'pending';
         this.broadcast({
             channel: 'setGameStatus',
@@ -138,8 +128,7 @@ module.exports = class Game {
             channel: 'roundWord',
             data: this.word
         });
-        // clearInterval(this._roundTimer);
-        this._roundTime$$ && this._roundTime$$.unsubscribe();
+
         let item = this._clients_gen.next();
 
         if (!item.value) {
@@ -157,6 +146,7 @@ module.exports = class Game {
             return;
         }
         this.banker = item.value;
+
         this.roundCountDown = this.pendingTime;
         this._roundTime$$ = Rx.Observable
             .interval(1000)
@@ -172,11 +162,6 @@ module.exports = class Game {
                 }
             })
             .subscribe();
-        //
-        // setTimeout(() => {
-        //     this.roundStart();
-        // }, this.pendingTime * 1000);
-
     }
     on (event, callback) {
         if (typeof callback !== 'function') {
