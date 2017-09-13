@@ -16,12 +16,12 @@ module.exports = class Game {
         }) {
 
         this._clients = clients;
-        this._clients_gen = this._clients.values();
+        this._clientsGenerator = this._clients.values();
 
         this.rounds = 2;
         this.currentRound = 0;
 
-        this.banker = this._clients_gen.next().value;
+        this.banker = this._clientsGenerator.next().value;
         this.players = (() => {
             let players = {};
             for (let client of clients.values()) {
@@ -129,12 +129,12 @@ module.exports = class Game {
             data: this.word
         });
 
-        let item = this._clients_gen.next();
+        let item = this._clientsGenerator.next();
 
         if (!item.value) {
             this.currentRound++;
-            this._clients_gen = this._clients.values();
-            item = this._clients_gen.next();
+            this._clientsGenerator = this._clients.values();
+            item = this._clientsGenerator.next();
         }
         if (this.currentRound >= this.rounds) {
             this._emit('gameEnd');

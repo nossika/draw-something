@@ -1,4 +1,4 @@
-const ROOMS = global.ROOMS;
+const ROOMS_MAP = global.ROOMS_MAP;
 const Room = require('./Room');
 const Game = require('./Game');
 const words = require('../resource/words');
@@ -6,16 +6,16 @@ const words = require('../resource/words');
 const handler = {
     enterRoom (roomName, cb) { // people enter
         if (!roomName) {
-            this.emitErrorMsg({ cb, content: 'invalid room name!' });
+            this.emitErrorMsg({ cb, content: 'invalid room name! (enterRoom)' });
             return;
         }
 
         if (this.room) this.room.peopleLeave(this);
 
-        if (!ROOMS.has(roomName)) {
+        if (!ROOMS_MAP.has(roomName)) {
             let room = new Room({ name: roomName });
             room.on('roomEmpty', room => {
-                ROOMS.delete(room.name);
+                ROOMS_MAP.delete(room.name);
             });
             ROOMS.set(roomName, room);
         }
@@ -26,7 +26,7 @@ const handler = {
     },
     leaveRoom (data, cb) { // people leave
         if (!this.room) {
-            this.emitErrorMsg({ cb, content: 'you\'re not in a room!' });
+            this.emitErrorMsg({ cb, content: 'you\'re not in a room! (leaveRoom)' });
             return;
         }
         this.room.peopleLeave(this);
@@ -43,7 +43,7 @@ const handler = {
     },
     sendRoomMessage (content, cb) { // send message in room
         if (!this.room) {
-            this.emitErrorMsg({ cb, content: 'you\'re not in a room!' });
+            this.emitErrorMsg({ cb, content: 'you\'re not in a room! (sendRoomMessage)' });
             return;
         }
         this.room.broadcast({
@@ -60,15 +60,15 @@ const handler = {
     startGame (data, cb) { // game start
         let room = this.room;
         if (!room) {
-            this.emitErrorMsg({ cb, content: 'you\'re not in a room!' });
+            this.emitErrorMsg({ cb, content: 'you\'re not in a room! (startGame)' });
             return;
         }
         if (room.owner !== this) {
-            this.emitErrorMsg({ cb, content: 'you\'re not the room owner!' });
+            this.emitErrorMsg({ cb, content: 'you\'re not the room owner! (startGame)' });
             return;
         }
         if (room.game) {
-            this.emitErrorMsg({ cb, content: 'game already start!' });
+            this.emitErrorMsg({ cb, content: 'game already start! (startGame)' });
             return;
         }
         // game
@@ -86,15 +86,15 @@ const handler = {
     },
     canvasStroke (data, cb) {
         if (!this.room) {
-            this.emitErrorMsg({ cb, content: 'you\'re not in a room!' });
+            this.emitErrorMsg({ cb, content: 'you\'re not in a room! (canvasStroke)' });
             return;
         }
         if (!this.room.game) {
-            this.emitErrorMsg({ cb, content: 'you\'re not in a game!' });
+            this.emitErrorMsg({ cb, content: 'you\'re not in a game! (canvasStroke)' });
             return;
         }
         if (this.room.game.banker !== this) {
-            this.emitErrorMsg({ cb, content: 'you\'re not game banker!' });
+            this.emitErrorMsg({ cb, content: 'you\'re not game banker! (canvasStroke)' });
             return;
         }
         this.room.broadcast({

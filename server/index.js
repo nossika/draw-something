@@ -5,8 +5,19 @@ const router = new koaRouter();
 const IO = require('socket.io')();
 
 global.IO = IO;
-global.ROOMS = new Map();
-global.CLIENTS = new Map();
+global.ROOMS_MAP = new Map();
+global.CLIENTS_MAP = new Map();
+
+global.CLIENTS_EMITTER = new Proxy(global.CLIENTS_MAP, {
+    get (map, key) {
+        let client = map.get(key);
+        if (client) {
+            return client.io.emit;
+        } else {
+            return () => {};
+        }
+    }
+});
 
 const initSocketEvent = require('./utils/initSocketEvent');
 

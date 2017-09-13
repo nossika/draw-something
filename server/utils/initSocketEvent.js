@@ -1,5 +1,5 @@
 const util = require('./index');
-const CLIENTS = global.CLIENTS;
+const CLIENTS_MAP = global.CLIENTS_MAP;
 const Client = require('../models/Client');
 
 module.exports = (IO) => {
@@ -7,13 +7,13 @@ module.exports = (IO) => {
         IO.emit('roomList', util.getRoomList());
     }, 1000);
     IO.on('connection', client => {
-        CLIENTS.set(client.id, new Client({
+        CLIENTS_MAP.set(client.id, new Client({
             client
         }));
         client.emit('userInfo', util.clientInfo(client));
         client.emit('roomList', util.getRoomList());
         client.on('disconnect', () => {
-            CLIENTS.delete(client.id);
+            CLIENTS_MAP.delete(client.id);
         });
     });
 };
