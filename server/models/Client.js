@@ -17,10 +17,10 @@ const handler = {
             room.on('roomEmpty', room => {
                 ROOMS_MAP.delete(room.name);
             });
-            ROOMS.set(roomName, room);
+            ROOMS_MAP.set(roomName, room);
         }
 
-        this.room = ROOMS.get(roomName);
+        this.room = ROOMS_MAP.get(roomName);
         this.room.peopleEnter(this);
         this.emitSuccessMsg({ cb });
     },

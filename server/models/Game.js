@@ -1,6 +1,6 @@
 const util = require('../utils');
 const Rx = require('rxjs/Rx');
-
+const CLIENTS_EMITTER = global.CLIENTS_EMITTER;
 function pickWord (wordList) {
     return wordList.splice(Math.random() * wordList.length | 0, 1)[0]
 }
@@ -22,15 +22,12 @@ module.exports = class Game {
         this.currentRound = 0;
 
         this.banker = this._clientsGenerator.next().value;
-        this.players = (() => {
-            let players = {};
-            for (let client of clients.values()) {
-                let clientInfo = util.clientInfo(client);
-                clientInfo.score = 0;
-                players[clientInfo.id] = clientInfo;
-            }
-            return players;
-        })();
+
+        this.playersMap = new Map(Array.from(clients).map(client => {
+            let clientInfo = util.clientInfo(client);
+            clientInfo.score = 0;
+            return [client.id, clientInfo];
+        }));
 
         this.status = 'await';
         this.pendingTime = pendingTime;
@@ -46,17 +43,18 @@ module.exports = class Game {
         this._handler = {};
     }
     broadcast ({ channel, data }) {
-        for (let client of this._clients.values()) {
-            client.io.emit(channel, data);
+        for (let clientId of this.playersMap.keys()) {
+            console.log(CLIENTS_EMITTER[clientId])
+            CLIENTS_EMITTER[clientId].emit(channel, data);
         }
     }
     peopleLeave (client) {
         this._clients.delete(client);
-        Reflect.deleteProperty(this.players, client.id);
-        this.broadcast({ channel: 'setGamePlayers', data: this.players });
+        this.playersMap.delete(client.id);
+        this.broadcast({ channel: 'setGamePlayers', data: util.map2Obj(this.playersMap) });
     }
     gameStart () {
-        this.broadcast({ channel: 'setGamePlayers', data: this.players });
+        this.broadcast({ channel: 'setGamePlayers', data: util.map2Obj(this.playersMap) });
         this.roundStart();
     }
     matchWord (word, client) {
@@ -71,7 +69,7 @@ module.exports = class Game {
             // block duplicate player
             if (this.wordMatched.includes(playerId)) return;
 
-            this.players[client.id].score += score;
+            this.playersMap.set(client.id, this.playersMap[client.id] + score);
             this.broadcast({
                 channel: 'updateGamePlayerScore',
                 data: { playerId: client.id, score }

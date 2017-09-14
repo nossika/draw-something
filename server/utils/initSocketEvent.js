@@ -13,7 +13,7 @@ module.exports = (IO) => {
         client.emit('userInfo', util.clientInfo(client));
         client.emit('roomList', util.getRoomList());
         client.on('disconnect', () => {
-            CLIENTS_MAP.delete(client.id);
+            // CLIENTS_MAP.delete(client.id);
         });
     });
 };

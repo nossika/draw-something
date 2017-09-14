@@ -25,6 +25,13 @@ const util = {
             id: client.id,
             info: client.info
         }
+    },
+    map2Obj (map) {
+        let obj = {};
+        for (let [key, value] of map.entries()) {
+            obj[key] = value;
+        }
+        return obj;
     }
 };
 

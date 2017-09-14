@@ -14,7 +14,7 @@ global.CLIENTS_EMITTER = new Proxy(global.CLIENTS_MAP, {
         if (client) {
             return client.io.emit;
         } else {
-            return () => {};
+            return function () {};
         }
     }
 });

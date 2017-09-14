@@ -9,11 +9,11 @@ export default (socket) => {
     // main
     socket.on('connect', () => {
         store.dispatch(networkActions.wsConnect());
-        if (localStorage.getItem('clientId')) {
-            socket.emit('setClient', {
-                id: localStorage.getItem('clientId')
-            });
-        }
+        // if (localStorage.getItem('clientId')) {
+        //     socket.emit('setClient', {
+        //         id: localStorage.getItem('clientId')
+        //     });
+        // }
     });
 
     socket.on('disconnect', () => {
