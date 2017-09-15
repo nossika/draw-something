@@ -10,15 +10,13 @@ const renderRankings = (players) => {
     for (let playerId in players) {
         let player = players[playerId];
         list.push(player);
-
     }
     list.sort((a, b) => a.score > b.score ? -1 : 1);
     list = list.map(player => (
         <div key={player.id}>
-            { player.id }: { player.score }
+            { player.id }{player.online ? '(on)' : '(off)'}: { player.score }
         </div>
     ));
-
     return (
         <div>
             { list }

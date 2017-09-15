@@ -13,7 +13,6 @@ module.exports = class Room {
     }
     peopleEnter (client) {
         // if (client.constructor !== Client) return; // validate client
-        console.log(client, this, 'peopleEnter');
         this.clients.add(client);
         this.broadcast({
             channel: 'peopleEnterRoom',
@@ -25,11 +24,11 @@ module.exports = class Room {
             this.setOwner(client);
         }
 
-        if (this.game) {
-            this.game.peopleEnter(client);
+        if (this.game && this.game.playersMap.has(client.id)) {
+            this.game.playerReconnect(client);
         }
     }
-    peopleLeave (client) {
+    peopleLeave (client, mute) {
         this.clients.delete(client);
 
         if (this.clients.size === 0) {
@@ -40,14 +39,19 @@ module.exports = class Room {
                 break;
             }
         }
-        if (this.game) {
-            this.game.peopleLeave(client);
+        if (this.game && this.game.playersMap.has(client.id)) {
+            this.game.playerLeave(client);
         }
 
-        this.broadcast({
+        !mute && this.broadcast({
             channel: 'peopleLeaveRoom',
             sender: client
         });
+    }
+    updateRoomInfo () {
+        for (let client of this.clients) {
+            client.io.emit('roomInfo', util.getRoomInfo(this.name));
+        }
     }
     setOwner (client) {
         this.owner = client;

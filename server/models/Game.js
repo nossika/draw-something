@@ -41,20 +41,37 @@ module.exports = class Game {
         this._roundTimer = 0;
         this.roundCountDown = 0;
         this._handler = {};
+
+        this.canvasData = [];
     }
-    broadcast ({ channel, data }) {
+    broadcast ({ channel, data, exclude }) {
+        exclude = exclude
+            ? (Array.isArray(exclude)
+                ? exclude
+                : [exclude])
+            : [];
         for (let clientId of this.playersMap.keys()) {
+            if (exclude.includes(clientId)) continue;
             CLIENTS_EMITTER[clientId](channel, data);
         }
     }
-    peopleLeave (client) {
+    playerLeave (client) {
         let player = this.playersMap.get(client.id);
-        player && (player.online = false);
+        if (!player) return;
+        player.online = false;
         this.broadcast({ channel: 'setGamePlayers', data: util.map2Obj(this.playersMap) });
     }
-    peopleEnter (client) {
+    playerReconnect (client) { // todo
         let player = this.playersMap.get(client.id);
-        player && (player.online = true);
+        if (!player) return;
+        player.online = true;
+        client.io.emit('setGameStatus', this.status);
+        client.io.emit('setGameCountDown', this.roundCountDown);
+        client.io.emit('setGameBanker', util.clientInfo(ClIENTS_MAP.get(this.bankerId)));
+        if (client.id === this.bankerId || this.status === 'pending') {
+            client.io.emit('roundWord', this.word);
+        }
+        client.io.emit('initCanvas', this.canvasData);
         this.broadcast({ channel: 'setGamePlayers', data: util.map2Obj(this.playersMap) });
     }
     gameStart () {
@@ -73,7 +90,9 @@ module.exports = class Game {
             // block duplicate player
             if (this.wordMatched.includes(playerId)) return;
 
-            this.playersMap.set(client.id, this.playersMap[client.id] + score);
+            let player = this.playersMap.get(client.id);
+            player.score += score;
+
             this.broadcast({
                 channel: 'updateGamePlayerScore',
                 data: { playerId: client.id, score }
@@ -85,6 +104,15 @@ module.exports = class Game {
                 this.roundEnd();
             }
         }
+    }
+    canvasStroke (client, data) {
+        if (client.id !== this.bankerId) return;
+        this.canvasData.push(data);
+        this.broadcast({
+            channel: 'canvasStroke',
+            data,
+            exclude: client.id
+        });
     }
     roundStart () {
         this._roundTime$$ && this._roundTime$$.unsubscribe();
@@ -105,6 +133,8 @@ module.exports = class Game {
 
         banker && banker.io.emit('roundWord', this.word);
         this.wordMatched = [];
+
+        this.canvasData = [];
 
         this.roundCountDown = this.roundTime;
         this._roundTime$$ = Rx.Observable

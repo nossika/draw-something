@@ -7,7 +7,7 @@ export default combineReducers({
     id (state = initialId, action) {
         switch (action.type) {
             case 'SET_USER_INFO':
-                return action.userInfo.id;
+                return action.userInfo.id !== undefined ? action.userInfo.id : state;
             default:
                 return state;
         }
@@ -15,7 +15,7 @@ export default combineReducers({
     info (state = initialInfo, action) {
         switch (action.type) {
             case 'SET_USER_INFO':
-                return action.userInfo.info;
+                return action.userInfo.info !== undefined ? action.userInfo.info : state;
             default:
                 return state;
         }

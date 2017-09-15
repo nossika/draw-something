@@ -9,18 +9,13 @@ export default (socket) => {
     // main
     socket.on('connect', () => {
         store.dispatch(networkActions.wsConnect());
-        // if (localStorage.getItem('clientId')) {
-        //     socket.emit('setClient', {
-        //         id: localStorage.getItem('clientId')
-        //     });
-        // }
     });
 
     socket.on('disconnect', () => {
         store.dispatch(networkActions.wsDisconnect());
     });
     socket.on('reconnect', () => {
-        console.log('reconnect'); // todo 断线重连时重进房间
+        console.log('reconnect'); // todo: re enterRoom on reconnect
         let state = store.getState();
         let roomName = state.room.currentRoom.name;
         if (roomName) {
@@ -31,12 +26,24 @@ export default (socket) => {
         console.error(d);
     });
     socket.on('userInfo', d => {
-        if (!localStorage.getItem('clientId')) {
-            localStorage.setItem('clientId', d.id);
+        let localClient = localStorage.getItem('clientId');
+        try {
+            localClient = JSON.parse(localClient);
+        } catch (e) {
+            localClient = null;
         }
+
+        let id;
+        if (localClient && (Date.now() - localClient._timestamp < 2 * 60 * 60 * 1000)) {
+            id = localClient.id;
+        } else {
+            id = d.id;
+        }
+        socket.emit('setClient', { id });
+        localStorage.setItem('clientId', JSON.stringify({ id, _timestamp: Date.now() }));
+
         store.dispatch(userActions.setUserInfo({
-            id: d.id,
-            info: d.info || {}
+            id
         }));
     });
     // room
@@ -99,8 +106,13 @@ export default (socket) => {
     socket.on('roundWord', word => {
         store.dispatch(gameActions.setGameWord(word));
     });
+    socket.on('initCanvas', data => {
+        canvasReset$.next();
+        for (let stroke of data) {
+            canvasStroke$.next(stroke);
+        }
+    });
     socket.on('canvasStroke', stroke => {
         canvasStroke$.next(stroke);
-        // store.dispatch(gameActions.pushCanvasStroke(stroke));
     });
 }

@@ -1,4 +1,5 @@
 const ROOMS_MAP = global.ROOMS_MAP;
+const CLIENTS_MAP = global.CLIENTS_MAP;
 const Room = require('./Room');
 const Game = require('./Game');
 const words = require('../resource/words');
@@ -34,8 +35,15 @@ const handler = {
         this.emitSuccessMsg({ cb });
     },
     setClient (info, cb) {
-        console.log(info.id, 'setClient');
-        // this.id = this.io.id = info.id;
+        CLIENTS_MAP.delete(this.id);
+        this.io.id = info.id;
+        CLIENTS_MAP.set(this.id, this);
+        if (this.room) {
+            this.room.updateRoomInfo();
+            if (this.room.game && this.room.game.playersMap.has(this.id)) {
+                this.room.game.playerReconnect(this);
+            }
+        }
     },
     setUserInfo (info, cb) { // set user info
         Object.assign(this.info, info);
@@ -87,27 +95,14 @@ const handler = {
         this.emitSuccessMsg({ cb });
     },
     canvasStroke (data, cb) {
-        if (!this.room) {
-            this.emitErrorMsg({ cb, content: 'you\'re not in a room! (canvasStroke)' });
-            return;
+        if (this.room && this.room.game) {
+            this.room.game.canvasStroke(this, data);
         }
-        if (!this.room.game) {
-            this.emitErrorMsg({ cb, content: 'you\'re not in a game! (canvasStroke)' });
-            return;
-        }
-        if (this.room.game.bankerId !== this.id) {
-            this.emitErrorMsg({ cb, content: 'you\'re not game banker! (canvasStroke)' });
-            return;
-        }
-        this.room.broadcast({
-            channel: 'canvasStroke',
-            data,
-            sender: this
-        });
         this.emitSuccessMsg({ cb });
     },
     disconnect () { // user disconnect
         this.room && this.room.peopleLeave(this);
+        CLIENTS_MAP.delete(this.id);
     },
 };
 
