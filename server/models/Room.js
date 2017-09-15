@@ -24,6 +24,10 @@ module.exports = class Room {
         if (this.clients.size === 1) {
             this.setOwner(client);
         }
+
+        if (this.game) {
+            this.game.peopleEnter(client);
+        }
     }
     peopleLeave (client) {
         this.clients.delete(client);

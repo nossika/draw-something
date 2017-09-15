@@ -1,6 +1,7 @@
 const util = require('../utils');
 const Rx = require('rxjs/Rx');
 const CLIENTS_EMITTER = global.CLIENTS_EMITTER;
+const ClIENTS_MAP = global.CLIENTS_MAP;
 function pickWord (wordList) {
     return wordList.splice(Math.random() * wordList.length | 0, 1)[0]
 }
@@ -15,19 +16,18 @@ module.exports = class Game {
             wordList,
         }) {
 
-        this._clients = clients;
-        this._clientsGenerator = this._clients.values();
 
         this.rounds = 2;
         this.currentRound = 0;
 
-        this.banker = this._clientsGenerator.next().value;
-
         this.playersMap = new Map(Array.from(clients).map(client => {
-            let clientInfo = util.clientInfo(client);
-            clientInfo.score = 0;
-            return [client.id, clientInfo];
+            let player = util.clientInfo(client);
+            player.score = 0;
+            player.online = true;
+            return [client.id, player];
         }));
+        this._bankerIdGenerator = this.playersMap.keys();
+        this.bankerId = this._bankerIdGenerator.next().value;
 
         this.status = 'await';
         this.pendingTime = pendingTime;
@@ -44,13 +44,17 @@ module.exports = class Game {
     }
     broadcast ({ channel, data }) {
         for (let clientId of this.playersMap.keys()) {
-            console.log(CLIENTS_EMITTER[clientId])
-            CLIENTS_EMITTER[clientId].emit(channel, data);
+            CLIENTS_EMITTER[clientId](channel, data);
         }
     }
     peopleLeave (client) {
-        this._clients.delete(client);
-        this.playersMap.delete(client.id);
+        let player = this.playersMap.get(client.id);
+        player && (player.online = false);
+        this.broadcast({ channel: 'setGamePlayers', data: util.map2Obj(this.playersMap) });
+    }
+    peopleEnter (client) {
+        let player = this.playersMap.get(client.id);
+        player && (player.online = true);
         this.broadcast({ channel: 'setGamePlayers', data: util.map2Obj(this.playersMap) });
     }
     gameStart () {
@@ -64,7 +68,7 @@ module.exports = class Game {
             let score = this.wordMatchScore[this.wordMatched.length];
 
             // block banker
-            if (client === this.banker) return;
+            if (client.id === this.bankerId) return;
 
             // block duplicate player
             if (this.wordMatched.includes(playerId)) return;
@@ -77,7 +81,7 @@ module.exports = class Game {
             this.wordMatched.push(playerId);
 
             // if all player matched or scores run out
-            if (this.wordMatched.length >= this.wordMatchScore.length || this.wordMatched.length >= this._clients.size) {
+            if (this.wordMatched.length >= this.wordMatchScore.length || this.wordMatched.length >= this.playersMap.size) {
                 this.roundEnd();
             }
         }
@@ -86,16 +90,20 @@ module.exports = class Game {
         this._roundTime$$ && this._roundTime$$.unsubscribe();
 
         this.status = 'going';
+
+        let banker = ClIENTS_MAP.get(this.bankerId);
         this.broadcast({
             channel: 'setGameStatus',
             data: this.status
         });
         this.broadcast({
             channel: 'setGameBanker',
-            data: util.clientInfo(this.banker)
+            data: util.clientInfo(banker)
         });
         this.word = pickWord(this.wordList);
-        this.banker && this.banker.io.emit('roundWord', this.word);
+
+
+        banker && banker.io.emit('roundWord', this.word);
         this.wordMatched = [];
 
         this.roundCountDown = this.roundTime;
@@ -127,12 +135,12 @@ module.exports = class Game {
             data: this.word
         });
 
-        let item = this._clientsGenerator.next();
+        let item = this._bankerIdGenerator.next();
 
         if (!item.value) {
             this.currentRound++;
-            this._clientsGenerator = this._clients.values();
-            item = this._clientsGenerator.next();
+            this._bankerIdGenerator = this.playersMap.keys();
+            item = this._bankerIdGenerator.next();
         }
         if (this.currentRound >= this.rounds) {
             this._emit('gameEnd');
@@ -143,7 +151,7 @@ module.exports = class Game {
             });
             return;
         }
-        this.banker = item.value;
+        this.bankerId = item.value;
 
         this.roundCountDown = this.pendingTime;
         this._roundTime$$ = Rx.Observable

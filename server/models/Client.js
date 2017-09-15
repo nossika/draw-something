@@ -51,10 +51,12 @@ const handler = {
             data: { content },
             sender: this
         });
+
         let game = this.room.game;
         if (game) {
             game.matchWord(content, this);
         }
+
         this.emitSuccessMsg({ cb });
     },
     startGame (data, cb) { // game start
@@ -93,7 +95,7 @@ const handler = {
             this.emitErrorMsg({ cb, content: 'you\'re not in a game! (canvasStroke)' });
             return;
         }
-        if (this.room.game.banker !== this) {
+        if (this.room.game.bankerId !== this.id) {
             this.emitErrorMsg({ cb, content: 'you\'re not game banker! (canvasStroke)' });
             return;
         }
@@ -114,11 +116,15 @@ module.exports = class Client {
     constructor ({
         client
     }) {
-        this.id = client.id;
         this.io = client;
+        Object.defineProperty(this, 'id', {
+            enumerable: true,
+            get () {
+                return this.io.id;
+            }
+        });
         this.info = {};
         this.room = null;
-
         for (let event in handler) {
             client.on(event, handler[event].bind(this));
         }

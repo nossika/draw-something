@@ -7,12 +7,11 @@ const IO = require('socket.io')();
 global.IO = IO;
 global.ROOMS_MAP = new Map();
 global.CLIENTS_MAP = new Map();
-
 global.CLIENTS_EMITTER = new Proxy(global.CLIENTS_MAP, {
     get (map, key) {
         let client = map.get(key);
         if (client) {
-            return client.io.emit;
+            return client.io.emit.bind(client.io);
         } else {
             return function () {};
         }
