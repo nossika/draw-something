@@ -34,7 +34,7 @@ module.exports = class Room {
         if (this.clients.size === 0) {
             this._emit('roomEmpty', this);
         } else if (client === this.owner) {
-            for (let firstClient of this.clients.values()) {
+            for (let firstClient of this.clients) {
                 this.setOwner(firstClient);
                 break;
             }

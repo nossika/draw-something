@@ -5,6 +5,8 @@ import { Link } from 'react-router-dom';
 import * as roomActions from 'actions/room';
 import history from 'utils/history';
 import handler from 'utils/handler';
+import style from 'style/common';
+
 
 @connect(
     state => ({
@@ -20,7 +22,7 @@ export default class Home extends Component {
         const { roomList } = this.props;
         return (
             <section>
-                <div>hello !</div>
+                <div style={style.title}>hello !</div>
                 <div>
                     <span>enter room name</span>
                     <input

@@ -33,6 +33,7 @@ const config = {
             'utils': path.resolve(__dirname, '../src/utils'),
             'network': path.resolve(__dirname, '../src/network'),
             'flow': path.resolve(__dirname, '../src/flow'),
+            'style': path.resolve(__dirname, '../src/style'),
         }
     },
 };
