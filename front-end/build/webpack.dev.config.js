@@ -8,7 +8,14 @@ module.exports = Object.assign(baseConfig, {
         hot: true,
         inline: true,
         open: true,
-        openPage: ''
+        openPage: '',
+        port: 8080,
+        proxy: {
+            '/asd': {
+                target: 'http://localhost:7869/lis'
+            }
+
+        }
     },
     plugins: [
         new HtmlWebpackPlugin({
