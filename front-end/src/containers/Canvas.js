@@ -18,6 +18,9 @@ const colors = ['red', 'black', 'green'];
 export default class Canvas extends Component {
     render () {
         let { game } = this.props;
+        if (game.a === 11) {
+            game.b = 22;
+        };
         return (
             <section>
                 <h1>{ game.status }</h1>
