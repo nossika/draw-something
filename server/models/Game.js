@@ -10,7 +10,7 @@ module.exports = class Game {
     constructor ({
             roundTime = 10,
             pendingTime = 5,
-            clients,
+            playerIdList,
             wordMatchScore = [5, 3, 1],
             bankerScore = 3,
             wordList,
@@ -20,7 +20,8 @@ module.exports = class Game {
         this.rounds = 2;
         this.currentRound = 0;
 
-        this.playersMap = new Map(Array.from(clients).map(client => {
+        this.playersMap = new Map(Array.from(playerIdList).map(clientId => {
+            let client = ClIENTS_MAP.get(clientId);
             let player = util.clientInfo(client);
             player.score = 0;
             player.online = true;
@@ -174,6 +175,7 @@ module.exports = class Game {
         }
         if (this.currentRound >= this.rounds) {
             this._emit('gameEnd');
+            this.gameEnd();
             this.status = 'await';
             this.broadcast({
                 channel: 'setGameStatus',
@@ -198,6 +200,9 @@ module.exports = class Game {
                 }
             })
             .subscribe();
+    }
+    gameEnd () {
+        this._roundTime$$ && this._roundTime$$.unsubscribe();
     }
     on (event, callback) {
         if (typeof callback !== 'function') {

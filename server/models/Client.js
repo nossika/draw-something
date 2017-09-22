@@ -16,12 +16,16 @@ const handler = {
         if (!ROOMS_MAP.has(roomName)) {
             let room = new Room({ name: roomName });
             room.on('roomEmpty', room => {
-                ROOMS_MAP.delete(room.name);
+                clearTimeout(room._timer);
+                room._timer = setTimeout(() => {
+                    ROOMS_MAP.delete(room.name);
+                });
             });
             ROOMS_MAP.set(roomName, room);
         }
 
         this.room = ROOMS_MAP.get(roomName);
+        clearTimeout(this.room._timer);
         this.room.peopleEnter(this);
         this.emitSuccessMsg({ cb });
     },
@@ -35,12 +39,15 @@ const handler = {
         this.emitSuccessMsg({ cb });
     },
     setClient (info, cb) {
-        CLIENTS_MAP.delete(this.id);
-        this.io.id = info.id;
-        CLIENTS_MAP.set(this.id, this);
+        let [prevId, curId] = [this.id, info.id];
+        CLIENTS_MAP.delete(prevId);
+        this.io.id = curId;
+        CLIENTS_MAP.set(curId, this);
         if (this.room) {
+            this.room.clientIdList.delete(prevId);
+            this.room.clientIdList.add(curId);
             this.room.updateRoomInfo();
-            if (this.room.game && this.room.game.playersMap.has(this.id)) {
+            if (this.room.game && this.room.game.playersMap.has(curId)) {
                 this.room.game.playerReconnect(this);
             }
         }
@@ -82,8 +89,9 @@ const handler = {
             return;
         }
         // game
+
         room.game = new Game({
-            clients: room.clients,
+            playerIdList: room.clientIdList,
             wordList: words.idiom
         });
         room.game.gameStart();

@@ -1,11 +1,12 @@
 const util = require('../utils');
 const Client = require('./Client.js');
+const CLIENTS_MAP = global.CLIENTS_MAP;
 
 module.exports = class Room {
     constructor ({
         name,
     }) {
-        this.clients = new Set(); // <Client>
+        this.clientIdList = new Set(); // <Client>
         this.owner = null;
         this.name = name;
         this.game = null;
@@ -13,14 +14,15 @@ module.exports = class Room {
     }
     peopleEnter (client) {
         // if (client.constructor !== Client) return; // validate client
-        this.clients.add(client);
+        if (!CLIENTS_MAP.has(client.id)) return;
+        this.clientIdList.add(client.id);
         this.broadcast({
             channel: 'peopleEnterRoom',
             sender: client
         });
         client.io.emit('roomInfo', util.getRoomInfo(this.name));
 
-        if (this.clients.size === 1) {
+        if (this.clientIdList.size === 1) {
             this.setOwner(client);
         }
 
@@ -29,13 +31,13 @@ module.exports = class Room {
         }
     }
     peopleLeave (client, mute) {
-        this.clients.delete(client);
+        this.clientIdList.delete(client.id);
 
-        if (this.clients.size === 0) {
+        if (this.clientIdList.size === 0) {
             this._emit('roomEmpty', this);
         } else if (client === this.owner) {
-            for (let firstClient of this.clients) {
-                this.setOwner(firstClient);
+            for (let firstClientId of this.clientIdList) {
+                this.setOwner(CLIENTS_MAP.get(firstClientId));
                 break;
             }
         }
@@ -49,8 +51,9 @@ module.exports = class Room {
         });
     }
     updateRoomInfo () {
-        for (let client of this.clients) {
-            client.io.emit('roomInfo', util.getRoomInfo(this.name));
+        for (let clientId of this.clientIdList) {
+            let client = CLIENTS_MAP.get(clientId);
+            client && client.io.emit('roomInfo', util.getRoomInfo(this.name));
         }
     }
     setOwner (client) {
@@ -70,8 +73,9 @@ module.exports = class Room {
             : (sender
                 ? [sender]
                 : []);
-        for (let client of this.clients) {
-            if (exclude.includes(client)) continue;
+        for (let clientId of this.clientIdList) {
+            let client = CLIENTS_MAP.get(clientId);
+            if (!client || exclude.includes(client)) continue;
             client.io.emit(channel, Object.assign(
                 {},
                 sender ? { sender: util.clientInfo(sender) } : {},
