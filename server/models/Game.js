@@ -60,6 +60,11 @@ module.exports = class Game {
         let player = this.playersMap.get(client.id);
         if (!player) return;
         player.online = false;
+        let isAllLeave = [...this.playersMap.values()].every(player => !player.online);
+        if (isAllLeave) {
+            this.gameEnd();
+            return;
+        }
         this.broadcast({ channel: 'setGamePlayers', data: util.map2Obj(this.playersMap) });
     }
     playerReconnect (client) { // todo
@@ -174,7 +179,6 @@ module.exports = class Game {
             item = this._bankerIdGenerator.next();
         }
         if (this.currentRound >= this.rounds) {
-            this._emit('gameEnd');
             this.gameEnd();
             this.status = 'await';
             this.broadcast({
@@ -202,6 +206,7 @@ module.exports = class Game {
             .subscribe();
     }
     gameEnd () {
+        this._emit('gameEnd');
         this._roundTime$$ && this._roundTime$$.unsubscribe();
     }
     on (event, callback) {
