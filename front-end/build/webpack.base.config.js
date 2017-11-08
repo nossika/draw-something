@@ -1,13 +1,15 @@
 const path = require('path');
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
+const webpack = require('webpack');
 
 const config = {
     entry: {
-        main: path.resolve(__dirname, '../src/main.js')
+        main: path.resolve(__dirname, '../src/main.js'),
+        vendor: ['react', 'redux', 'react-redux', 'react-dom', 'react-router-dom', 'rxjs', 'react-router'],
     },
     output: {
         path: path.resolve(__dirname, '../dist'),
-        filename: 'build.[hash].js',
+        filename: 'build.[name].[hash].js',
         chunkFilename: 'chunk.[name].[hash].js'
     },
     module: {
@@ -50,7 +52,11 @@ const config = {
         }
     },
     plugins: [
-        new ExtractTextPlugin('style.css'),
+        new webpack.optimize.CommonsChunkPlugin({
+            name: 'vendor',
+            filename: 'vendor.[hash].js',
+        }),
+        new ExtractTextPlugin('style.[hash].css'),
     ]
 };
 
