@@ -31,7 +31,6 @@ const handler = {
     },
     leaveRoom (data, cb) { // people leave
         if (!this.room) {
-            this.emitErrorMsg({ cb, content: 'you\'re not in a room! (leaveRoom)' });
             return;
         }
         this.room.peopleLeave(this);

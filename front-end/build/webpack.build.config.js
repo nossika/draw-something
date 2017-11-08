@@ -4,11 +4,10 @@ const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 
-baseConfig.output.filename = 'build.[hash].js';
 
 module.exports = Object.assign(baseConfig, {
     devtool: '#source-map',
-    plugins: [
+    plugins: (baseConfig.plugins || []).concat([
         new webpack.DefinePlugin({
             'process.env': {
                 NODE_ENV: '"production"'
@@ -36,5 +35,5 @@ module.exports = Object.assign(baseConfig, {
                 dry:      false
             }
         )
-    ]
+    ])
 });

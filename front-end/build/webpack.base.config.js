@@ -1,11 +1,13 @@
 const path = require('path');
+const ExtractTextPlugin = require("extract-text-webpack-plugin");
+
 const config = {
     entry: {
         main: path.resolve(__dirname, '../src/main.js')
     },
     output: {
         path: path.resolve(__dirname, '../dist'),
-        filename: 'build.js',
+        filename: 'build.[hash].js',
         chunkFilename: 'chunk.[name].[hash].js'
     },
     module: {
@@ -21,8 +23,18 @@ const config = {
             },
             {
                 test: /\.(css|less)$/,
-                loader: 'style-loader!css-loader!less-loader'
-            }
+                use: ExtractTextPlugin.extract({
+                    fallback: "style-loader",
+                    use: "css-loader!less-loader"
+                })
+            },
+            {
+                test: /\.(png|jpe?g|gif|svg|eot|ttf|woff)(\?\S*)?$/,
+                loader: 'file-loader',
+                query: {
+                    name: '[name].[ext]?[hash]'
+                }
+            },
         ]
     },
     resolve: {
@@ -34,8 +46,12 @@ const config = {
             'network': path.resolve(__dirname, '../src/network'),
             'flow': path.resolve(__dirname, '../src/flow'),
             'style': path.resolve(__dirname, '../src/style'),
+            'lib': path.resolve(__dirname, '../src/lib'),
         }
     },
+    plugins: [
+        new ExtractTextPlugin('style.css'),
+    ]
 };
 
 module.exports = config;

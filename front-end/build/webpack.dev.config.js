@@ -10,11 +10,11 @@ module.exports = Object.assign(baseConfig, {
         open: true,
         openPage: ''
     },
-    plugins: [
+    plugins: (baseConfig.plugins || []).concat([
         new HtmlWebpackPlugin({
             template: path.resolve(__dirname, '../src/index.html'),
             inject: 'body'
         }),
         new webpack.HotModuleReplacementPlugin()
-    ]
+    ])
 });
