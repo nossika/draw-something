@@ -4,9 +4,10 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux'
 import * as roomActions from 'actions/room';
 import Game from './Game';
+import Header from 'containers/Header';
 import handler from 'utils/handler';
 import { getFormatTime } from 'utils/formatter';
-import { Link } from 'react-router-dom';
+
 
 const renderMessageList = (messageList) => {
     let list = [];
@@ -46,12 +47,7 @@ export default class Room extends Component {
         let isRoomOwner = currentRoom.owner && user.id === currentRoom.owner.id;
         return (
             <section>
-                <div>
-                    <Link to={'/'}>
-                        back
-                    </Link>
-                </div>
-                <div>roomName: { currentRoom.name }</div>
+                <Header title={ currentRoom.name } btn={['home']} />
                 <div>count: { currentRoom.people.length }</div>
                 <div>owner: { JSON.stringify(currentRoom.owner) }</div>
                 <div>list: { JSON.stringify(currentRoom.people) }</div>

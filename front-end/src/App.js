@@ -6,7 +6,6 @@ import AsyncComponent from 'containers/AsyncComponent';
 import * as networkActions from 'actions/network';
 
 
-
 @connect(
     state => ({
         loadingStatus: state.network.loadingStatus,
@@ -17,16 +16,8 @@ import * as networkActions from 'actions/network';
 )
 export default class App extends Component {
     render () {
-        const { loadingStatus, webSocketStatus, loading, loaded, wsConnect, wsDisconnect, user } = this.props;
         return (
-            <section>
-                <div>
-                    <svg className="icon" aria-hidden="true">
-                        <use xlinkHref="#icon-wifi"></use>
-                    </svg>
-                    { String(webSocketStatus) }
-                </div>
-                <div>myId: { user.id }</div>
+            <section className="body">
                 <Router>
                     <Switch>
                         <Route path="/" exact component={ AsyncComponent(() => import('containers/Home')) }/>
