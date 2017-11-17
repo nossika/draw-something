@@ -34,11 +34,10 @@ export default class Header extends Component {
 
         return (
             <section className="fixed-header">
-                <div>
+                <div className={ `wifi ${webSocketStatus ? 'success-color' : 'alert-color'}` }>
                     <svg className="icon" aria-hidden="true">
                         <use xlinkHref="#icon-wifi"></use>
                     </svg>
-                    { String(webSocketStatus) }
                 </div>
                 <div>myId: { user.id }</div>
                 <div>title: { title }</div>
