@@ -61,7 +61,7 @@ module.exports = class Room {
         this.broadcast({
             channel: 'roomOwnerChanged',
             data: {
-                owner: util.clientInfo(client)
+                owner: util.clientData(client)
             }
         });
     }
@@ -78,7 +78,7 @@ module.exports = class Room {
             if (!client || exclude.includes(client)) continue;
             client.io.emit(channel, Object.assign(
                 {},
-                sender ? { sender: util.clientInfo(sender) } : {},
+                sender ? { sender: util.clientData(sender) } : {},
                 { timestamp: Date.now() },
                 data || {},
             ), callback);

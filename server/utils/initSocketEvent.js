@@ -10,7 +10,7 @@ module.exports = (IO) => {
         CLIENTS_MAP.set(client.id, new Client({
             client
         }));
-        client.emit('userInfo', util.clientInfo(client));
+        client.emit('userData', util.clientData(client));
         client.emit('roomList', util.getRoomList());
     });
 };

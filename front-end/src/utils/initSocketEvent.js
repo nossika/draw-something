@@ -4,6 +4,7 @@ import * as networkActions from 'actions/network';
 import * as userActions from 'actions/user';
 import * as gameActions from 'actions/game';
 import { canvasStroke$, canvasReset$ } from 'flow/canvas';
+import ls from 'api/localStorage';
 
 export default (socket) => {
     // main
@@ -25,23 +26,13 @@ export default (socket) => {
     socket.on('errorMsg', (d) => {
         console.error(d);
     });
-    socket.on('userInfo', d => {
-        let localClient = localStorage.getItem('clientId');
-        try {
-            localClient = JSON.parse(localClient);
-        } catch (e) {
-            localClient = null;
-        }
-
-        let id;
-        if (localClient && (Date.now() - localClient._timestamp < 2 * 60 * 60 * 1000)) {
-            id = localClient.id;
-        } else {
+    socket.on('userData', d => {
+        let id = ls.get('clientId');
+        if (!id) {
             id = d.id;
         }
-        socket.emit('setClient', { id });
-        localStorage.setItem('clientId', JSON.stringify({ id, _timestamp: Date.now() }));
-
+        socket.emit('setClientId', id);
+        ls.set('clientId', id, 2 * 60 * 60 * 1000);
         store.dispatch(userActions.setUserData({
             id
         }));

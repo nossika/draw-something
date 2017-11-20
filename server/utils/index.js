@@ -8,7 +8,7 @@ const util = {
             list.push({
                 roomName: room.name,
                 peopleCount: room.clientIdList.size,
-                owner: util.clientInfo(room.owner)
+                owner: util.clientData(room.owner)
             });
         }
         return list;
@@ -19,11 +19,11 @@ const util = {
             return null;
         }
         return {
-            people: Array.from(room.clientIdList).map(clientId => (util.clientInfo(CLIENTS_MAP.get(clientId)))),
-            owner: util.clientInfo(room.owner)
+            people: Array.from(room.clientIdList).map(clientId => (util.clientData(CLIENTS_MAP.get(clientId)))),
+            owner: util.clientData(room.owner)
         }
     },
-    clientInfo (client) {
+    clientData (client) {
         if (!client) return null;
         return {
             id: client.id,

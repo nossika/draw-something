@@ -4,7 +4,8 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux'
 import AsyncComponent from 'containers/AsyncComponent';
 import * as networkActions from 'actions/network';
-
+import * as userActions from 'actions/user';
+import ls from 'api/localStorage';
 
 @connect(
     state => ({
@@ -12,7 +13,7 @@ import * as networkActions from 'actions/network';
         webSocketStatus: state.network.webSocketStatus,
         user: state.user
     }),
-    dispatch => bindActionCreators({...networkActions}, dispatch)
+    dispatch => bindActionCreators({...networkActions, ...userActions}, dispatch)
 )
 export default class App extends Component {
     render () {
@@ -34,5 +35,10 @@ export default class App extends Component {
                 </Router>
             </section>
         )
+    }
+    componentWillMount () {
+        this.props.setUserData({
+            info: ls.get('clientInfo')
+        });
     }
 }

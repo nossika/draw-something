@@ -22,7 +22,7 @@ module.exports = class Game {
 
         this.playersMap = new Map(Array.from(playerIdList).map(clientId => {
             let client = ClIENTS_MAP.get(clientId);
-            let player = util.clientInfo(client);
+            let player = util.clientData(client);
             player.score = 0;
             player.online = true;
             return [client.id, player];
@@ -73,7 +73,7 @@ module.exports = class Game {
         player.online = true;
         client.io.emit('setGameStatus', this.status);
         client.io.emit('setGameCountDown', this.roundCountDown);
-        client.io.emit('setGameBanker', util.clientInfo(ClIENTS_MAP.get(this.bankerId)));
+        client.io.emit('setGameBanker', util.clientData(ClIENTS_MAP.get(this.bankerId)));
         if (client.id === this.bankerId || this.status === 'pending') {
             client.io.emit('roundWord', this.word);
         }
@@ -132,7 +132,7 @@ module.exports = class Game {
         });
         this.broadcast({
             channel: 'setGameBanker',
-            data: util.clientInfo(banker)
+            data: util.clientData(banker)
         });
         this.word = pickWord(this.wordList);
 

@@ -1,4 +1,5 @@
-import socket from 'network/ws';
+import socket from 'api/socketIo';
+import ls from 'api/localStorage';
 import store from '../reducers';
 import * as roomActions from 'actions/room';
 import * as networkActions from 'actions/network';
@@ -34,12 +35,12 @@ export default {
     emitCanvasStroke (stroke) {
         socket.emit('canvasStroke', stroke);
     },
-    setUserData (userData) {
-        socket.emit('set')
-        store.dispatch(userActions.setUserData({
-            info: {
-                name: 1,
-            }
-        }));
+    setUserInfo (info) {
+        socket.emit('setClientInfo', info, (e) => {
+            ls.set('clientInfo', info, 7 * 24 * 60 * 60 * 1000);
+            store.dispatch(userActions.setUserData({
+                info
+            }));
+        });
     },
 }

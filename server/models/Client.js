@@ -37,8 +37,8 @@ const handler = {
         this.room = null;
         this.emitSuccessMsg({ cb });
     },
-    setClient (info, cb) {
-        let [prevId, curId] = [this.id, info.id];
+    setClientId (id, cb) {
+        let [prevId, curId] = [this.id, id];
         CLIENTS_MAP.delete(prevId);
         this.io.id = curId;
         CLIENTS_MAP.set(curId, this);
@@ -51,7 +51,7 @@ const handler = {
             }
         }
     },
-    setUserData (info, cb) { // set user data
+    setClientInfo (info, cb) { // set client info
         Object.assign(this.info, info);
         this.emitSuccessMsg({ cb });
     },

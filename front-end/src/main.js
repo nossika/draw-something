@@ -5,7 +5,7 @@ import App from './App';
 import store from './reducers';
 import 'lib/iconfont';
 import 'style/index.less';
-import socket from 'network/ws';
+import socket from 'api/socketIo';
 import initSocketEvent from 'utils/initSocketEvent';
 initSocketEvent(socket);
 

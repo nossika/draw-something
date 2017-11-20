@@ -95,7 +95,7 @@ export default class Room extends Component {
     }
     componentDidMount () {
         let { roomName, currentRoom } = this.props;
-        if (currentRoom && currentRoom.roomName === roomName) return;
+        if (currentRoom && currentRoom.name === roomName) return;
         // todo 处理此时socket还未连接上的情况
         wsAction.enterRoom(roomName);
     }

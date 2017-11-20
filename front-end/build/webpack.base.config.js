@@ -45,7 +45,7 @@ const config = {
             'components': path.resolve(__dirname, '../src/components'),
             'containers': path.resolve(__dirname, '../src/containers'),
             'utils': path.resolve(__dirname, '../src/utils'),
-            'network': path.resolve(__dirname, '../src/network'),
+            'api': path.resolve(__dirname, '../src/api'),
             'flow': path.resolve(__dirname, '../src/flow'),
             'style': path.resolve(__dirname, '../src/style'),
             'lib': path.resolve(__dirname, '../src/lib'),

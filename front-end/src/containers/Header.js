@@ -3,6 +3,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import * as networkActions from 'actions/network';
+import wsAction from "../utils/wsAction";
 
 @connect(
     state => ({
@@ -99,7 +100,7 @@ export default class Header extends Component {
                                 </div>
                             )
                             : (
-                                <div title="点击此处修改昵称">
+                                <div title="点击修改昵称">
                                     <svg className="icon" aria-hidden="true">
                                         <use xlinkHref="#icon-people"></use>
                                     </svg>
@@ -129,16 +130,21 @@ export default class Header extends Component {
             </section>
         )
     }
+    componentWillMount () {
+
+    }
     switchInfoEditable () {
         if (!this.state.nameEditable) {
             this.setState({
-                nameEditable: true
+                nameEditable: true,
+                nameValue: this.props.user.info.name || this.props.user.id,
             });
         }
     }
     setName () {
-
-        console.log(this.state.nameValue)
+        wsAction.setUserInfo({
+            name: this.state.nameValue,
+        });
         this.setState({
             nameEditable: false,
         });
