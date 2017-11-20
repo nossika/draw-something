@@ -51,7 +51,7 @@ const handler = {
             }
         }
     },
-    setUserInfo (info, cb) { // set user info
+    setUserData (info, cb) { // set user data
         Object.assign(this.info, info);
         this.emitSuccessMsg({ cb });
     },

@@ -42,7 +42,7 @@ export default (socket) => {
         socket.emit('setClient', { id });
         localStorage.setItem('clientId', JSON.stringify({ id, _timestamp: Date.now() }));
 
-        store.dispatch(userActions.setUserInfo({
+        store.dispatch(userActions.setUserData({
             id
         }));
     });

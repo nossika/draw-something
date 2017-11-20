@@ -14,37 +14,133 @@ import * as networkActions from 'actions/network';
 )
 export default class Header extends Component {
     static defaultProps = {
-        btn: [],
+        type: '',
+    };
+    state = {
+        nameEditable: false,
+        nameValue: '',
     };
     render () {
-        const { loadingStatus, webSocketStatus, loading, loaded, wsConnect, wsDisconnect, user, title, btn } = this.props;
+        const { loadingStatus, webSocketStatus, loading, loaded, wsConnect, wsDisconnect, user, title, type } = this.props;
 
-        let btnList = btn.map(name => {
-            switch (name) {
+        let typeNode = (type) => {
+            switch (type) {
                 case 'home':
                     return (
-                        <Link to={'/'} key={name}>
-                            back
+                        <a href="#">
+                            <svg className="icon" aria-hidden="true">
+                                <use xlinkHref="#icon-home"></use>
+                            </svg>
+                        </a>
+                    );
+                case 'room':
+                    return (
+                        <Link to={'/'}>
+                            <svg className="icon" aria-hidden="true">
+                                <use xlinkHref="#icon-exit"></use>
+                            </svg>
                         </Link>
                     );
                 default:
                     return null;
             }
-        });
-
+        };
         return (
             <section className="fixed-header">
-                <div className={ `wifi ${webSocketStatus ? 'success-color' : 'alert-color'}` }>
-                    <svg className="icon" aria-hidden="true">
-                        <use xlinkHref="#icon-wifi"></use>
-                    </svg>
-                </div>
-                <div>myId: { user.id }</div>
-                <div>title: { title }</div>
                 <div>
-                    {btnList}
+                    { typeNode(type) }
                 </div>
+                <div>
+                    { type === 'room' ? `房间[${title}]` : title }
+                </div>
+
+                <div onClick={::this.switchInfoEditable}>
+
+                    {
+                        this.state.nameEditable
+                            ? (
+                                <div>
+                                    <svg className="icon" aria-hidden="true">
+                                        <use xlinkHref="#icon-people"></use>
+                                    </svg>
+                                    <input
+                                        value={this.state.nameValue}
+                                        onChange={
+                                            (e) => {
+                                                this.setState({
+                                                    nameValue: e.target.value
+                                                })
+                                            }
+                                        }
+                                        onKeyDown={
+                                            (e) => {
+                                                if (e.keyCode === 13) {
+                                                    this.setName();
+                                                }
+                                            }
+                                        }
+                                    />
+                                    <span onClick={::this.setName}>
+                                        <svg className="icon" aria-hidden="true">
+                                            <use xlinkHref="#icon-roundcheck"></use>
+                                        </svg>
+                                    </span>
+                                    <span onClick={
+                                        () => {
+                                            this.setState({
+                                                nameEditable: false,
+                                            });
+                                        }
+                                    }>
+                                        <svg className="icon" aria-hidden="true">
+                                            <use xlinkHref="#icon-roundclose"></use>
+                                        </svg>
+                                    </span>
+                                </div>
+                            )
+                            : (
+                                <div title="点击此处修改昵称">
+                                    <svg className="icon" aria-hidden="true">
+                                        <use xlinkHref="#icon-people"></use>
+                                    </svg>
+                                    { user.info.name || user.id }
+                                </div>
+                            )
+
+                    }
+
+
+                </div>
+                {
+                    webSocketStatus
+                        ? null
+                        : (
+                            <div
+                                className={ `wifi ${'alert-color'}` }
+                                title={'网络出错'}
+                            >
+                                <svg className="icon" aria-hidden="true">
+                                    <use xlinkHref="#icon-wifi"></use>
+                                </svg>
+                            </div>
+                        )
+                }
+
             </section>
         )
+    }
+    switchInfoEditable () {
+        if (!this.state.nameEditable) {
+            this.setState({
+                nameEditable: true
+            });
+        }
+    }
+    setName () {
+
+        console.log(this.state.nameValue)
+        this.setState({
+            nameEditable: false,
+        });
     }
 }

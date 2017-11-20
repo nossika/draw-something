@@ -5,7 +5,7 @@ import { connect } from 'react-redux'
 import * as roomActions from 'actions/room';
 import Game from './Game';
 import Header from 'containers/Header';
-import handler from 'utils/handler';
+import wsAction from 'utils/wsAction';
 import { getFormatTime } from 'utils/formatter';
 
 
@@ -47,7 +47,7 @@ export default class Room extends Component {
         let isRoomOwner = currentRoom.owner && user.id === currentRoom.owner.id;
         return (
             <section>
-                <Header title={ currentRoom.name } btn={['home']} />
+                <Header title={ currentRoom.name } type={'room'} />
                 <div>count: { currentRoom.people.length }</div>
                 <div>owner: { JSON.stringify(currentRoom.owner) }</div>
                 <div>list: { JSON.stringify(currentRoom.people) }</div>
@@ -56,7 +56,7 @@ export default class Room extends Component {
                         (() => {
                             if (isRoomOwner && gameStatus === 'await') {
                                 return (
-                                    <button onClick={ handler.startGame }>start game</button>
+                                    <button onClick={ wsAction.startGame }>start game</button>
                                 )
                             }
                         })()
@@ -87,7 +87,7 @@ export default class Room extends Component {
     }
     sendMessage (e) {
         if (e.keyCode === 13) {
-            handler.sendRoomMessage(this.state.messageInputValue);
+            wsAction.sendRoomMessage(this.state.messageInputValue);
             this.setState({
                 messageInputValue: ''
             });
@@ -97,7 +97,7 @@ export default class Room extends Component {
         let { roomName, currentRoom } = this.props;
         if (currentRoom && currentRoom.roomName === roomName) return;
         // todo 处理此时socket还未连接上的情况
-        handler.enterRoom(roomName);
+        wsAction.enterRoom(roomName);
     }
 }
 

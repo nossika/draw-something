@@ -4,7 +4,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux'
 import Brush from 'utils/brush';
 import Rx from 'rxjs/Rx';
-import handler from 'utils/handler';
+import wsAction from 'utils/wsAction';
 import { canvasStroke$, canvasReset$ } from 'flow/canvas';
 import * as gameActions from 'actions/game';
 
@@ -127,7 +127,7 @@ export default class Game extends Component {
         if (!fromServer && (game.status !== 'going' || !game.banker || game.banker.id !== user.id)) return;
         pushCanvasStroke(stroke);
         this.brush.draw(stroke);
-        !fromServer && handler.emitCanvasStroke(stroke);
+        !fromServer && wsAction.emitCanvasStroke(stroke);
     }
     resetCanvas () {
         let { setCanvasData } = this.props;

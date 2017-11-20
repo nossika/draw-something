@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import { Link } from 'react-router-dom';
 import * as roomActions from 'actions/room';
 import history from 'utils/history';
-import handler from 'utils/handler';
+import wsAction from 'utils/wsAction';
 import Header from 'containers/Header';
 
 @connect(
@@ -21,7 +21,7 @@ export default class Home extends Component {
         const { roomList } = this.props;
         return (
             <section>
-                <Header title="首页"/>
+                <Header title="首页" type={'home'}/>
                 <div>
                     <span>enter room name</span>
                     <input
@@ -43,7 +43,7 @@ export default class Home extends Component {
                             key={roomName}
                         >
                             <Link to={'/' + roomName}>
-                                { roomName }: { peopleCount }, owner: { owner ? owner.id : '-' }
+                                { roomName }: { peopleCount }, owner: { owner ? (owner.info.name || owner.id) : '-' }
                             </Link>
                         </div>
                     ))
@@ -59,7 +59,7 @@ export default class Home extends Component {
     }
     componentDidMount () {
         let { setRoomInfo } = this.props;
-        handler.leaveRoom();
+        wsAction.leaveRoom();
         setRoomInfo({ roomName: '' });
     }
 }
