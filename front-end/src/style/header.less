@@ -1,11 +1,28 @@
 @import './theme.less';
 
 .fixed-header {
-  display: flex;
+  display: grid;
+  grid-template-columns: 300px auto 300px;
+  grid-template-rows: auto;
   background: @info-color;
   box-sizing: border-box;
   padding: 5px;
   color: #fff;
+  height: 60px;
+  position: relative;
+  .item {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    &.left {
+      grid-area: ~"1 / 1 / 2 / 2";
+      justify-content: flex-start;
+    }
+    &.right {
+      grid-area: ~"1 / 3 / 2 / 4";
+      justify-content: flex-end;
+    }
+  }
   .wifi {
       stroke-width: 3;
       stroke: #fff;

@@ -6,17 +6,24 @@ import AsyncComponent from 'containers/AsyncComponent';
 import * as networkActions from 'actions/network';
 import * as userActions from 'actions/user';
 import ls from 'api/localStorage';
+import Error from 'containers/Error';
 
 @connect(
     state => ({
         loadingStatus: state.network.loadingStatus,
         webSocketStatus: state.network.webSocketStatus,
-        user: state.user
+        user: state.user,
+        error: state.error
     }),
     dispatch => bindActionCreators({...networkActions, ...userActions}, dispatch)
 )
 export default class App extends Component {
     render () {
+        if (this.props.error.type) {
+            return (
+                <Error type={'logout'}/>
+            )
+        }
         return (
             <section className="body">
                 <Router>

@@ -48,14 +48,17 @@ export default class Header extends Component {
         };
         return (
             <section className="fixed-header">
-                <div>
-                    { typeNode(type) }
-                </div>
-                <div>
-                    { type === 'room' ? `房间[${title}]` : title }
+                <div className="item left">
+                    <span>
+                        { typeNode(type) }
+                    </span>
+                    <span>
+                        { type === 'room' ? `房间[${title}]` : title }
+                    </span>
                 </div>
 
-                <div onClick={::this.switchInfoEditable}>
+
+                <div className="item right" onClick={::this.switchInfoEditable}>
 
                     {
                         this.state.nameEditable
@@ -117,7 +120,7 @@ export default class Header extends Component {
                         ? null
                         : (
                             <div
-                                className={ `wifi ${'alert-color'}` }
+                                className={ `item wifi ${'alert-color'}` }
                                 title={'网络出错'}
                             >
                                 <svg className="icon" aria-hidden="true">

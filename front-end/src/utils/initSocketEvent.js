@@ -3,6 +3,7 @@ import * as roomAction from 'actions/room';
 import * as networkActions from 'actions/network';
 import * as userActions from 'actions/user';
 import * as gameActions from 'actions/game';
+import * as errorActions from 'actions/error';
 import { canvasStroke$, canvasReset$ } from 'flow/canvas';
 import ls from 'api/localStorage';
 
@@ -23,6 +24,10 @@ export default (socket) => {
             socket.emit('enterRoom', roomName);
         }
     });
+    socket.on('logout', (d) => {
+        console.error(d, 'logout');
+        store.dispatch(errorActions.errorLogout());
+    });
     socket.on('errorMsg', (d) => {
         console.error(d);
     });
@@ -33,6 +38,12 @@ export default (socket) => {
         }
         socket.emit('setClientId', id);
         ls.set('clientId', id, 2 * 60 * 60 * 1000);
+
+        let info = ls.get('clientInfo');
+        if (info) {
+            socket.emit('setClientInfo', info);
+        }
+
         store.dispatch(userActions.setUserData({
             id
         }));

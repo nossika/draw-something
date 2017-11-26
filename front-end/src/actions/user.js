@@ -3,3 +3,4 @@ export const setUserData = userData => ({
     // { id: string; info: { name: string; avatar: string; } }
     userData
 });
+

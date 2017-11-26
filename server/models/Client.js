@@ -41,6 +41,11 @@ const handler = {
         let [prevId, curId] = [this.id, id];
         CLIENTS_MAP.delete(prevId);
         this.io.id = curId;
+        let conflictClient = CLIENTS_MAP.get(curId);
+        if (conflictClient) {
+            conflictClient.room && conflictClient.room.peopleLeave(this);
+            conflictClient.io.emit('logout', id);
+        }
         CLIENTS_MAP.set(curId, this);
         if (this.room) {
             this.room.clientIdList.delete(prevId);
@@ -109,7 +114,10 @@ const handler = {
     },
     disconnect () { // user disconnect
         this.room && this.room.peopleLeave(this);
-        CLIENTS_MAP.delete(this.id);
+        // ensure this is the target client
+        if (CLIENTS_MAP.get(this.id) === this) {
+            CLIENTS_MAP.delete(this.id);
+        }
     },
 };
 
