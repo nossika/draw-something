@@ -27,18 +27,12 @@ export default class Header extends Component {
         let typeNode = (type) => {
             switch (type) {
                 case 'home':
-                    return (
-                        <a href="#">
-                            <svg className="icon" aria-hidden="true">
-                                <use xlinkHref="#icon-home"></use>
-                            </svg>
-                        </a>
-                    );
+                    return null;
                 case 'room':
                     return (
                         <Link to={'/'}>
                             <svg className="icon" aria-hidden="true">
-                                <use xlinkHref="#icon-exit"></use>
+                                <use xlinkHref="#icon-back"></use>
                             </svg>
                         </Link>
                     );
@@ -105,7 +99,7 @@ export default class Header extends Component {
                             : (
                                 <div title="点击修改昵称">
                                     <svg className="icon" aria-hidden="true">
-                                        <use xlinkHref="#icon-people"></use>
+                                        <use xlinkHref="#icon-profile"></use>
                                     </svg>
                                     { user.info.name || user.id }
                                 </div>

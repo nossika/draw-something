@@ -15,12 +15,14 @@ module.exports = class Room {
     peopleEnter (client) {
         // if (client.constructor !== Client) return; // validate client
         if (!CLIENTS_MAP.has(client.id)) return;
+        client.io.emit('roomInfo', util.getRoomInfo(this.name));
+
         this.clientIdList.add(client.id);
         this.broadcast({
             channel: 'peopleEnterRoom',
-            sender: client
+            sender: client,
+            exclude: [],
         });
-        client.io.emit('roomInfo', util.getRoomInfo(this.name));
 
         if (this.clientIdList.size === 1) {
             this.setOwner(client);

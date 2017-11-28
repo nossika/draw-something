@@ -7,22 +7,32 @@ import Game from './Game';
 import Header from 'containers/Header';
 import wsAction from 'utils/wsAction';
 import { getFormatTime } from 'utils/formatter';
-
+import { getPersonName } from 'utils/main';
 
 const renderMessageList = (messageList) => {
-    let list = [];
-    messageList.forEach(message => {
-        list.push(
-            <div key={message.timestamp}>
-                <span>time:{ getFormatTime(message.timestamp) }</span>
-                <span>content: { message.content }</span>
-                <span>by: { JSON.stringify(message.by) }</span>
-            </div>
-        )
-    });
     return (
         <div>
-            { list }
+            {
+                messageList.map(message => {
+                    return (
+                        <div key={message.timestamp}>
+                            <div>
+                                <svg className="icon" aria-hidden="true">
+                                    <use xlinkHref="#icon-time"></use>
+                                </svg>
+                                <span>{ getFormatTime(message.timestamp) }</span>
+                            </div>
+                            <div>
+                                <svg className="icon" aria-hidden="true">
+                                    <use xlinkHref="#icon-people"></use>
+                                </svg>
+                                <span>{ getPersonName(message.by) }</span>
+                            </div>
+                            <div>{ message.content }</div>
+                        </div>
+                    )
+                })
+            }
         </div>
     )
 };
@@ -44,13 +54,32 @@ export default class Room extends Component {
     };
     render () {
         let { currentRoom, gameStatus, user } = this.props;
-        let isRoomOwner = currentRoom.owner && user.id === currentRoom.owner.id;
+        let { owner, people, name } = currentRoom;
+        let isRoomOwner = owner && user.id === owner.id;
+
         return (
             <section>
-                <Header title={ currentRoom.name } type={'room'} />
-                <div>count: { currentRoom.people.length }</div>
-                <div>owner: { JSON.stringify(currentRoom.owner) }</div>
-                <div>list: { JSON.stringify(currentRoom.people) }</div>
+                <Header title={ name } type={'room'} />
+                <div>
+                    <svg className="icon" aria-hidden="true">
+                        <use xlinkHref="#icon-favor"></use>
+                    </svg>
+                    <span>{ getPersonName(owner) }</span>
+                </div>
+                <div>
+                    <svg className="icon" aria-hidden="true">
+                        <use xlinkHref="#icon-group"></use>
+                    </svg>
+                    {
+                        people.map(person => {
+                            return (
+                                <span key={person.id}>
+                                    { getPersonName(person) }
+                                </span>
+                            )
+                        })
+                    }
+                </div>
                 <div>
                     {
                         (() => {
@@ -63,7 +92,7 @@ export default class Room extends Component {
                     }
                 </div>
                 <div>
-                    <Game status={gameStatus}/>
+                    <Game />
                 </div>
                 <div>
                     <input

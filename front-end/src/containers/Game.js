@@ -7,6 +7,7 @@ import Rx from 'rxjs/Rx';
 import wsAction from 'utils/wsAction';
 import { canvasStroke$, canvasReset$ } from 'flow/canvas';
 import * as gameActions from 'actions/game';
+import { getPersonName } from 'utils/main';
 
 const renderRankings = (players) => {
     let list = [];
@@ -15,9 +16,9 @@ const renderRankings = (players) => {
         list.push(player);
     }
     list.sort((a, b) => a.score > b.score ? -1 : 1);
-    list = list.map(player => (
-        <div key={player.id}>
-            { player.id }{player.online ? '(on)' : '(off)'}: { player.score }
+    list = list.map((player, index) => (
+        <div key={player.id} className={player.online ? 'on' : 'off'}>
+            {index + 1}: { getPersonName(player) } - { player.score }
         </div>
     ));
     return (
@@ -36,23 +37,41 @@ const strokeColors = ['red', 'black', 'green'];
     dispatch => bindActionCreators({...gameActions}, dispatch)
 )
 export default class Game extends Component {
-    static propTypes = {
-        status: PropTypes.string.isRequired
-    };
     render () {
-        let { status, game } = this.props;
+        let { game } = this.props;
+        let { word, countDown, banker, players, status } = game;
         return (
             <section>
                 <section>
                     <h1>game</h1>
-                    <div>word: { game.word }</div>
-                    <div>status: { status }</div>
-                    <div>countDown: { game.countDown }</div>
-                    <div>banker: { JSON.stringify(game.banker) }</div>
-                    <div>rankings: { renderRankings(game.players) }</div>
+                    <h1>{ status }</h1>
+                    <div>
+                        <svg className="icon" aria-hidden="true">
+                            <use xlinkHref="#icon-focus"></use>
+                        </svg>
+                        { word }
+                    </div>
+                    <div>
+                        <svg className="icon" aria-hidden="true">
+                            <use xlinkHref="#icon-countdown"></use>
+                        </svg>
+                        <span>{ countDown }</span>
+                    </div>
+                    <div>
+                        <svg className="icon" aria-hidden="true">
+                            <use xlinkHref="#icon-write"></use>
+                        </svg>
+                        { getPersonName(banker) }
+                    </div>
+                    <div>
+                        <svg className="icon" aria-hidden="true">
+                            <use xlinkHref="#icon-rank"></use>
+                        </svg>
+                        { renderRankings(players) }
+                    </div>
                 </section>
                 <section>
-                    <h1>{ game.status }</h1>
+
                     <canvas
                         ref="canvas" width="300" height="300"
                     ></canvas>

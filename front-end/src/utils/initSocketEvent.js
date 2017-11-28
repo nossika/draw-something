@@ -73,16 +73,28 @@ export default (socket) => {
     });
     socket.on('peopleEnterRoom', message => {
         store.dispatch(roomAction.addRoomPeople(message.sender));
+        store.dispatch(roomAction.receiveRoomMessage({
+            timestamp: message.timestamp,
+            type: 'system',
+            by: message.sender,
+            content: 'enter',
+        }));
     });
     socket.on('peopleLeaveRoom', message => {
         store.dispatch(roomAction.delRoomPeople(message.sender));
+        store.dispatch(roomAction.receiveRoomMessage({
+            timestamp: message.timestamp,
+            type: 'system',
+            by: message.sender,
+            content: 'leave',
+        }));
     });
     socket.on('roomMessage', message => {
         store.dispatch(roomAction.receiveRoomMessage({
             timestamp: message.timestamp,
             type: 'message',
             by: message.sender || null,
-            content: message.content
+            content: message.content,
         }));
     });
     // game

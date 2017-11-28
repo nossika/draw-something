@@ -12,4 +12,9 @@ const util = {
 
 };
 
+
 export default util;
+
+export function getPersonName (person) {
+    return person ? (person.info.name || person.id) : '';
+}

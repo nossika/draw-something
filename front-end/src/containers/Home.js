@@ -6,6 +6,7 @@ import * as roomActions from 'actions/room';
 import history from 'utils/history';
 import wsAction from 'utils/wsAction';
 import Header from 'containers/Header';
+import { getPersonName } from 'utils/main';
 
 @connect(
     state => ({
@@ -23,8 +24,8 @@ export default class Home extends Component {
             <section>
                 <Header title="首页" type={'home'}/>
                 <div>
-                    <span>enter room name</span>
                     <input
+                        placeholder="输入房间名"
                         value={this.state.roomInputValue}
                         onChange={
                             e => {
@@ -34,8 +35,13 @@ export default class Home extends Component {
                                 });
                             }
                         }
-                        onKeyDown={::this.enterRoom}
+                        onKeyDown={ e => {
+                            if (e.keyCode === 13) {
+                                this.enterRoom();
+                            }
+                        }}
                     />
+                    <span className={"btn" + (this.state.roomInputValue ? '' : ' disabled')} onClick={::this.enterRoom}>进入房间</span>
                 </div>
                 {
                     roomList.map(({ roomName, peopleCount, owner }) => (
@@ -43,7 +49,24 @@ export default class Home extends Component {
                             key={roomName}
                         >
                             <Link to={'/' + roomName}>
-                                { roomName }: { peopleCount }, owner: { owner ? (owner.info.name || owner.id) : '-' }
+                                <div>
+                                    <svg className="icon" aria-hidden="true">
+                                        <use xlinkHref="#icon-home"></use>
+                                    </svg>
+                                    <span>{roomName}</span>
+                                </div>
+                                <div>
+                                    <svg className="icon" aria-hidden="true">
+                                        <use xlinkHref="#icon-group"></use>
+                                    </svg>
+                                    <span>{peopleCount}</span>
+                                </div>
+                                <div>
+                                    <svg className="icon" aria-hidden="true">
+                                        <use xlinkHref="#icon-favor"></use>
+                                    </svg>
+                                    <span>{ getPersonName(owner) }</span>
+                                </div>
                             </Link>
                         </div>
                     ))
@@ -53,9 +76,8 @@ export default class Home extends Component {
         )
     }
     enterRoom (e) {
-        if (e.keyCode === 13) {
-            history.push('/' + this.state.roomInputValue);
-        }
+        if (!this.state.roomInputValue) return;
+        history.push('/' + this.state.roomInputValue);
     }
     componentDidMount () {
         let { setRoomInfo } = this.props;
