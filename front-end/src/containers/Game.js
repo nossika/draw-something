@@ -73,6 +73,7 @@ export default class Game extends Component {
                 <section>
 
                     <canvas
+                        className="canvas"
                         ref="canvas" width="300" height="300"
                     ></canvas>
                     <div>
@@ -91,6 +92,16 @@ export default class Game extends Component {
             </section>
         );
     }
+    resizeCanvas = function () {
+        console.log('resize', this);
+        // todo redraw
+        // let { setCanvasData } = this.props;
+        // setCanvasData({
+        //     size: [this.refs.canvas.width, this.refs.canvas.height],
+        //     strokes: []
+        // });
+        // this.brush.redraw();
+    }.bind(this);
     componentWillMount () {
         let { setGameStatus, setGameCountDown, setGameBanker, setGamePlayers, setGameWord, setCanvasData } = this.props;
         setGameStatus('await');
@@ -99,8 +110,10 @@ export default class Game extends Component {
         setGamePlayers({});
         setGameWord('');
         setCanvasData({ strokes: [] });
+
     }
     componentDidMount () {
+        window.addEventListener('resize', this.resizeCanvas);
         this.brush = new Brush({ canvas: this.refs.canvas });
         this.canvasStroke$$ = canvasStroke$.subscribe(stroke => this.syncStroke(stroke, true));
         this.canvasReset$$ = canvasReset$.subscribe(() => this.resetCanvas());
@@ -138,6 +151,7 @@ export default class Game extends Component {
         this.mouseEvent$$.unsubscribe();
         this.canvasReset$$.unsubscribe();
         this.canvasStroke$$.unsubscribe();
+        window.removeEventListener('resize', this.resizeCanvas);
     }
     syncStroke (stroke, fromServer) {
         let { game, user, pushCanvasStroke } = this.props;

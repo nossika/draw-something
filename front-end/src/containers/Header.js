@@ -31,7 +31,7 @@ export default class Header extends Component {
                 case 'room':
                     return (
                         <Link to={'/'}>
-                            <svg className="icon" aria-hidden="true">
+                            <svg className="icon clickable" aria-hidden="true">
                                 <use xlinkHref="#icon-back"></use>
                             </svg>
                         </Link>
@@ -62,6 +62,7 @@ export default class Header extends Component {
                                         <use xlinkHref="#icon-people"></use>
                                     </svg>
                                     <input
+                                        className="input input-white input-md"
                                         value={this.state.nameValue}
                                         onChange={
                                             (e) => {
@@ -79,7 +80,7 @@ export default class Header extends Component {
                                         }
                                     />
                                     <span onClick={::this.setName}>
-                                        <svg className="icon" aria-hidden="true">
+                                        <svg className="icon clickable" aria-hidden="true">
                                             <use xlinkHref="#icon-roundcheck"></use>
                                         </svg>
                                     </span>
@@ -90,7 +91,7 @@ export default class Header extends Component {
                                             });
                                         }
                                     }>
-                                        <svg className="icon" aria-hidden="true">
+                                        <svg className="icon clickable" aria-hidden="true">
                                             <use xlinkHref="#icon-roundclose"></use>
                                         </svg>
                                     </span>

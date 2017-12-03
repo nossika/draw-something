@@ -1,5 +1,6 @@
 @import './theme.less';
 
+// base style
 * {
   margin: 0;
   padding: 0;
@@ -9,11 +10,14 @@
 
 a {
   text-decoration: none;
+  color: inherit;
 }
+
 
 html {
   font-size: 16px;
   color: @text-color;
+  background: @info-bg;
 }
 
 // iconfont
@@ -24,6 +28,8 @@ html {
   overflow: hidden;
 }
 
+
+// color
 .alert-color {
   color: @alert-color;
 }
@@ -39,4 +45,46 @@ html {
 .success-color {
   color: @success-color;
 }
+
+// common
+
+.icon {
+  &.clickable{
+    cursor: pointer;
+  }
+}
+
+.input {
+  border-radius: 4px;
+  &.input-default {
+    border: 1px solid #ccc;
+    background: #fff;
+    &:focus {
+      border-color: @info-color;
+    }
+  }
+  &.input-white {
+    border: 1px solid #ccc;
+    background: #fff;
+    &:focus {
+      border-color: #fff;
+    }
+  }
+
+  &.input-md {
+    font-size: 16px;
+    line-height: 28px;
+    padding: 0 6px;
+  }
+
+  &.input-lg {
+    font-size: 20px;
+    line-height: 34px;
+    padding: 0 10px;
+  }
+}
+
+
+
+
 

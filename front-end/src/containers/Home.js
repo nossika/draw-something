@@ -25,6 +25,7 @@ export default class Home extends Component {
                 <Header title="首页" type={'home'}/>
                 <div>
                     <input
+                        className="input input-default input-lg"
                         placeholder="输入房间名"
                         value={this.state.roomInputValue}
                         onChange={

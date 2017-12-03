@@ -96,6 +96,7 @@ export default class Room extends Component {
                 </div>
                 <div>
                     <input
+                        className="input input-default input-md"
                         value={this.state.messageInputValue}
                         onChange={
                             e => {
