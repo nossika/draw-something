@@ -20,6 +20,9 @@ export default class Brush {
     }
     draw (stroke) {
         let ctx = this.ctx;
+        let { width, height } = ctx.canvas;
+        let x = stroke.x * width;
+        let y = stroke.y * height;
         switch (stroke.type) {
             case 'mode':
                 this.mode = stroke.mode;
@@ -29,18 +32,18 @@ export default class Brush {
                 break;
             case 'begin':
                 ctx.beginPath();
-                ctx.moveTo(stroke.x, stroke.y);
+                ctx.moveTo(x, y);
                 ctx.stroke();
                 break;
             case 'move':
             {
                 switch (this.mode) {
                     case 'brush':
-                        ctx.lineTo(stroke.x, stroke.y);
+                        ctx.lineTo(x, y);
                         ctx.stroke();
                         break;
                     case 'eraser':
-                        ctx.clearRect(stroke.x - this.ctx.lineWidth, stroke.y - this.ctx.lineWidth, this.ctx.lineWidth * 2, this.ctx.lineWidth * 2);
+                        ctx.clearRect(x - ctx.lineWidth, y - ctx.lineWidth, ctx.lineWidth * 2, ctx.lineWidth * 2);
                         break;
                 }
             }

@@ -74,7 +74,8 @@ export default class Game extends Component {
 
                     <canvas
                         className="canvas"
-                        ref="canvas" width="300" height="300"
+                        ref="canvas" width="600" height="400"
+                        style={{width: '80%'}}
                     ></canvas>
                     <div>
                         {
@@ -82,7 +83,6 @@ export default class Game extends Component {
                                 return (<span key={color} onClick={() => {
                                     this.syncStroke({ type: 'mode', mode: 'brush' });
                                     this.syncStroke({ type: 'color', color });
-
                                 }}>{ color }</span>)
                             })
                         }
@@ -93,14 +93,10 @@ export default class Game extends Component {
         );
     }
     resizeCanvas = function () {
-        console.log('resize', this);
-        // todo redraw
-        // let { setCanvasData } = this.props;
-        // setCanvasData({
-        //     size: [this.refs.canvas.width, this.refs.canvas.height],
-        //     strokes: []
-        // });
-        // this.brush.redraw();
+        const canvas = this.refs.canvas;
+        canvas.width = canvas.offsetWidth;
+        canvas.height = canvas.offsetHeight;
+        this.brush.redraw(this.props.game.canvasData.strokes);
     }.bind(this);
     componentWillMount () {
         let { setGameStatus, setGameCountDown, setGameBanker, setGamePlayers, setGameWord, setCanvasData } = this.props;
@@ -121,8 +117,8 @@ export default class Game extends Component {
             .fromEvent(this.refs.canvas, 'mousedown')
             .do(e => { // beginPath on mousedown event
                 this.syncStroke({
-                    x: e.offsetX,
-                    y: e.offsetY,
+                    x: e.offsetX / this.refs.canvas.offsetWidth,
+                    y: e.offsetY / this.refs.canvas.offsetHeight,
                     type: 'begin',
                 });
             })
@@ -135,8 +131,8 @@ export default class Game extends Component {
                     })))
             .do(e => { // draw mousemove event
                 this.syncStroke({
-                    x: e.offsetX,
-                    y: e.offsetY,
+                    x: e.offsetX / this.refs.canvas.offsetWidth,
+                    y: e.offsetY / this.refs.canvas.offsetHeight,
                     type: 'move',
                 });
             })
@@ -144,7 +140,7 @@ export default class Game extends Component {
 
         // todo: redraw after state changed
         setTimeout(() => {
-            this.brush.redraw(this.props.game.canvasData.strokes);
+            this.resizeCanvas();
         });
     }
     componentWillUnmount () {
