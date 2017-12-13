@@ -85,7 +85,7 @@ export default class Room extends Component {
                         (() => {
                             if (isRoomOwner && gameStatus === 'await') {
                                 return (
-                                    <button onClick={ wsAction.startGame }>start game</button>
+                                    <div className="btn btn-default btn-md" onClick={ wsAction.startGame }>start game</div>
                                 )
                             }
                         })()

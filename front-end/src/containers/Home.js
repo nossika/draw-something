@@ -23,7 +23,7 @@ export default class Home extends Component {
         return (
             <section>
                 <Header title="首页" type={'home'}/>
-                <div>
+                <div className="input-wrapper">
                     <input
                         className="input input-default input-lg"
                         placeholder="输入房间名"
@@ -42,36 +42,48 @@ export default class Home extends Component {
                             }
                         }}
                     />
-                    <span className={"btn" + (this.state.roomInputValue ? '' : ' disabled')} onClick={::this.enterRoom}>进入房间</span>
+                    <span className={"btn btn-default btn-lg" + (this.state.roomInputValue ? '' : ' disabled')} onClick={::this.enterRoom}>进入房间</span>
                 </div>
+                <div className="room-wrapper">
+                {
+                    roomList.length ? null : <div className="tip">暂无其他房间，自己创建一个吧~</div>
+                }
                 {
                     roomList.map(({ roomName, peopleCount, owner }) => (
-                        <div
+                        <Link
+                            to={'/' + roomName}
+                            className="room-item"
                             key={roomName}
                         >
-                            <Link to={'/' + roomName}>
-                                <div>
+                            <div className="row">
+                                <span className="icon-wrapper">
                                     <svg className="icon" aria-hidden="true">
                                         <use xlinkHref="#icon-home"></use>
                                     </svg>
-                                    <span>{roomName}</span>
-                                </div>
-                                <div>
+                                </span>
+                                <span className="value">{roomName}</span>
+                            </div>
+                            <div className="row">
+                                <span className="icon-wrapper">
                                     <svg className="icon" aria-hidden="true">
                                         <use xlinkHref="#icon-group"></use>
                                     </svg>
-                                    <span>{peopleCount}</span>
-                                </div>
-                                <div>
+                                </span>
+                                <span className="value">{peopleCount}</span>
+                            </div>
+                            <div className="row">
+                                <span className="icon-wrapper">
                                     <svg className="icon" aria-hidden="true">
                                         <use xlinkHref="#icon-favor"></use>
                                     </svg>
-                                    <span>{ getPersonName(owner) }</span>
-                                </div>
-                            </Link>
-                        </div>
+                                </span>
+                                <span className="value">{ getPersonName(owner) }</span>
+                            </div>
+                        </Link>
                     ))
                 }
+
+                </div>
             </section>
 
         )

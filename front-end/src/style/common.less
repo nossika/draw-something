@@ -19,7 +19,9 @@ html {
   color: @text-color;
   background: @info-bg;
 }
-
+body {
+  padding-top: 60px;
+}
 // iconfont
 .icon {
   width: 1em; height: 1em;
@@ -27,7 +29,11 @@ html {
   fill: currentColor;
   overflow: hidden;
 }
-
+.icon-wrapper {
+  display: inline-block;
+  margin-right: 5px;
+  font-size: 20px;
+}
 
 // color
 .alert-color {
@@ -47,15 +53,21 @@ html {
 }
 
 // common
-
+.clickable{
+  cursor: pointer;
+}
 .icon {
-  &.clickable{
-    cursor: pointer;
+  &.clickable {
+    opacity: .8;
+    &:hover {
+      opacity: 1;
+    }
   }
 }
 
 .input {
   border-radius: 4px;
+  display: inline-block;
   &.input-default {
     border: 1px solid #ccc;
     background: #fff;
@@ -78,6 +90,56 @@ html {
   }
 
   &.input-lg {
+    font-size: 20px;
+    line-height: 34px;
+    padding: 0 10px;
+  }
+}
+
+.btn {
+  cursor: pointer;
+  display: inline-block;
+  border-width: 1px;
+  border-style: solid;
+  border-radius: 4px;
+  &.disabled {
+    border-color: #ccc !important;
+    background: #ccc !important;
+    color: #fff !important;
+    cursor: not-allowed !important;
+  }
+  &.btn-default {
+    border-color: @info-color;
+    background: @info-color;
+    color: #fff;
+    &:hover {
+      border-color: @info-color-hover;
+      background: @info-color-hover;
+    }
+    &:active {
+      border-color: @info-color-active;
+      background: @info-color-active;
+    }
+  }
+  &.btn-white {
+    color: rgba(0, 0, 0, 0.65);
+    background-color: #fff;
+    border-color: #d9d9d9;
+    &:hover {
+      color: @info-color-hover;
+      border-color: @info-color-hover;
+    }
+    &:active {
+      color: @info-color-active;
+      border-color: @info-color-active;
+    }
+  }
+  &.btn-md {
+    font-size: 16px;
+    line-height: 28px;
+    padding: 0 6px;
+  }
+  &.btn-lg {
     font-size: 20px;
     line-height: 34px;
     padding: 0 10px;

@@ -31,9 +31,12 @@ export default class Header extends Component {
                 case 'room':
                     return (
                         <Link to={'/'}>
-                            <svg className="icon clickable" aria-hidden="true">
-                                <use xlinkHref="#icon-back"></use>
-                            </svg>
+                            <span className="icon-wrapper">
+                                <svg className="icon clickable" aria-hidden="true">
+                                    <use xlinkHref="#icon-back"></use>
+                                </svg>
+                            </span>
+
                         </Link>
                     );
                 default:
@@ -57,10 +60,12 @@ export default class Header extends Component {
                     {
                         this.state.nameEditable
                             ? (
-                                <div>
-                                    <svg className="icon" aria-hidden="true">
-                                        <use xlinkHref="#icon-people"></use>
-                                    </svg>
+                                [
+                                    <span className="icon-wrapper">
+                                        <svg className="icon" aria-hidden="true">
+                                            <use xlinkHref="#icon-people"></use>
+                                        </svg>
+                                    </span>,
                                     <input
                                         className="input input-white input-md"
                                         value={this.state.nameValue}
@@ -78,13 +83,13 @@ export default class Header extends Component {
                                                 }
                                             }
                                         }
-                                    />
-                                    <span onClick={::this.setName}>
+                                    />,
+                                    <span className="icon-wrapper" onClick={::this.setName}>
                                         <svg className="icon clickable" aria-hidden="true">
                                             <use xlinkHref="#icon-roundcheck"></use>
                                         </svg>
-                                    </span>
-                                    <span onClick={
+                                    </span>,
+                                    <span className="icon-wrapper" onClick={
                                         () => {
                                             this.setState({
                                                 nameEditable: false,
@@ -95,14 +100,16 @@ export default class Header extends Component {
                                             <use xlinkHref="#icon-roundclose"></use>
                                         </svg>
                                     </span>
-                                </div>
+                                ]
                             )
                             : (
-                                <div title="点击修改昵称">
-                                    <svg className="icon" aria-hidden="true">
-                                        <use xlinkHref="#icon-profile"></use>
-                                    </svg>
-                                    { user.info.name || user.id }
+                                <div title="点击修改昵称" className="clickable">
+                                    <span className="icon-wrapper">
+                                        <svg className="icon" aria-hidden="true">
+                                            <use xlinkHref="#icon-profile"></use>
+                                        </svg>
+                                    </span>
+                                    <span>{ user.info.name || user.id }</span>
                                 </div>
                             )
 

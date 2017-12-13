@@ -38,7 +38,7 @@ const strokeColors = ['red', 'black', 'green'];
 )
 export default class Game extends Component {
     render () {
-        let { game } = this.props;
+        let { game, user } = this.props;
         let { word, countDown, banker, players, status } = game;
         return (
             <section>
@@ -75,7 +75,7 @@ export default class Game extends Component {
                     <canvas
                         className="canvas"
                         ref="canvas" width="600" height="400"
-                        style={{width: '80%'}}
+                        style={{width: '80%', cursor: (status !== 'going' || !banker || banker.id !== user.id) ? 'default' : 'crosshair'}}
                     ></canvas>
                     <div>
                         {

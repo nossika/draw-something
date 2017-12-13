@@ -1,0 +1,46 @@
+.input-wrapper {
+  margin: 30px 0 20px 0;
+  display: flex;
+  justify-content: center;
+  .input {
+    margin-right: 20px;
+  }
+}
+
+.room-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  .tip {
+    margin: 60px;
+    color: #ccc;
+  }
+  .room-item {
+    width: 280px;
+    height: 110px;
+    padding: 20px;
+    margin: 10px;
+    background: #fff;
+    border: 1px solid #ececec;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    .row {
+      display: flex;
+      align-items: center;
+      .value {
+        display: inline-block;
+        width: 240px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+    }
+
+    &:hover {
+      box-shadow: 0 0 8px 3px rgba(0,0,0,.05);
+    }
+  }
+}
