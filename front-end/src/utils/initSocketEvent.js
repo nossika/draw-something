@@ -34,7 +34,7 @@ export default (socket) => {
     socket.on('userData', d => {
         let id = ls.get('clientId');
         if (!id) {
-            id = d.id;
+            id = '游客' + d.id.slice(0, 6);
         }
         socket.emit('setClientId', id);
         ls.set('clientId', id, 2 * 60 * 60 * 1000);

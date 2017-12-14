@@ -60,41 +60,51 @@ export default class Room extends Component {
         return (
             <section>
                 <Header title={ name } type={'room'} />
-                <div>
-                    <svg className="icon" aria-hidden="true">
-                        <use xlinkHref="#icon-favor"></use>
-                    </svg>
-                    <span>{ getPersonName(owner) }</span>
-                </div>
-                <div>
-                    <svg className="icon" aria-hidden="true">
-                        <use xlinkHref="#icon-group"></use>
-                    </svg>
+                <section className="control-block">
                     {
-                        people.map(person => {
-                            return (
-                                <span key={person.id}>
-                                    { getPersonName(person) }
-                                </span>
-                            )
-                        })
+                        gameStatus === 'await' ?
+                            isRoomOwner ?
+                            <div className="btn btn-default btn-md" onClick={ wsAction.startGame }>开始游戏</div>
+                            : <div className="btn btn-default btn-md disabled">请等待房主开始游戏</div>
+                        : null
+
                     }
-                </div>
-                <div>
-                    {
-                        (() => {
-                            if (isRoomOwner && gameStatus === 'await') {
-                                return (
-                                    <div className="btn btn-default btn-md" onClick={ wsAction.startGame }>start game</div>
-                                )
-                            }
-                        })()
-                    }
-                </div>
-                <div>
+                </section>
+
+                <section className="game-block">
                     <Game />
-                </div>
-                <div>
+
+                </section>
+                <section className="people-block">
+                    <div>
+                        <span className="icon-wrapper">
+                            <svg className="icon" aria-hidden="true">
+                                <use xlinkHref="#icon-favor"></use>
+                            </svg>
+                        </span>
+                        <span>{ getPersonName(owner) }</span>
+                    </div>
+                    <div>
+                        <span className="icon-wrapper">
+                            <svg className="icon" aria-hidden="true">
+                                <use xlinkHref="#icon-group"></use>
+                            </svg>
+                        </span>
+                        <span>
+                            {
+                                people.filter(person => person.id !== owner.id).map(person => {
+                                    return [
+                                        <span key={person.id}>
+                                            { getPersonName(person) }
+                                        </span>,
+                                        <br/>
+                                    ]
+                                })
+                            }
+                        </span>
+                    </div>
+                </section>
+                <section className="chat-block">
                     <input
                         className="input input-default input-md"
                         value={this.state.messageInputValue}
@@ -108,7 +118,7 @@ export default class Room extends Component {
                         }
                         onKeyDown={::this.sendMessage}
                     />
-                </div>
+                </section>
                 <div>
                     {renderMessageList(currentRoom.messageList)}
                 </div>
