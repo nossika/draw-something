@@ -17,15 +17,32 @@ const renderRankings = (players) => {
     }
     list.sort((a, b) => a.score > b.score ? -1 : 1);
     list = list.map((player, index) => (
-        <div key={player.id} className={player.online ? 'on' : 'off'}>
-            {index + 1}: { getPersonName(player) } - { player.score }
+        <div key={player.id} className="table-row">
+            <span className="rank">
+                { index + 1 }
+            </span>
+            <span className={"name" + (player.online ? ' on' : ' off')}>
+                { getPersonName(player) }
+            </span>
+            <span className="score">
+                { player.score }
+            </span>
         </div>
     ));
-    return (
-        <div>
-            { list }
+    list.unshift(
+        <div className="table-row">
+            <span className="rank">
+                排名
+            </span>
+            <span className="name">
+                玩家
+            </span>
+            <span className="score">
+                积分
+            </span>
         </div>
-    )
+    );
+    return list;
 };
 const strokeColors = ['red', 'black', 'green'];
 
@@ -33,51 +50,62 @@ const strokeColors = ['red', 'black', 'green'];
     state => ({
         game: state.game,
         user: state.user,
+        currentRoom: state.room.currentRoom,
     }),
     dispatch => bindActionCreators({...gameActions}, dispatch)
 )
 export default class Game extends Component {
     render () {
-        let { game, user } = this.props;
+        let { game, user, currentRoom } = this.props;
         let { word, countDown, banker, players, status } = game;
+        let { owner } = currentRoom;
+        let isRoomOwner = owner && user.id === owner.id;
         return (
-            <section>
-                <section>
-                    <h1>game</h1>
-                    <h1>{ status }</h1>
-                    <div>
-                        <svg className="icon" aria-hidden="true">
-                            <use xlinkHref="#icon-focus"></use>
-                        </svg>
-                        { word }
+            <section className="game-wrapper">
+                <section className="game-info">
+                    <div className="tip">{ {pending: '等待下个回合', going: '进行中', await: '等待房主开始游戏'}[status] }</div>
+                    {
+                        status === 'await' && isRoomOwner ?
+                            <div className="starter">
+                                <span className="btn btn-default btn-md" onClick={ wsAction.startGame }>开始游戏</span>
+                            </div>
+                            : null
+                    }
+                    <div title="目标词语">
+                        <span className="icon-wrapper">
+                            <svg className="icon" aria-hidden="true">
+                                <use xlinkHref="#icon-focus"></use>
+                            </svg>
+                        </span>
+                        <span className="value">{ word }</span>
                     </div>
-                    <div>
-                        <svg className="icon" aria-hidden="true">
-                            <use xlinkHref="#icon-countdown"></use>
-                        </svg>
-                        <span>{ countDown }</span>
+                    <div title="倒计时">
+                        <span className="icon-wrapper">
+                            <svg className="icon" aria-hidden="true">
+                                <use xlinkHref="#icon-countdown"></use>
+                            </svg>
+                        </span>
+                        <span className="value">{ countDown || '' }</span>
                     </div>
-                    <div>
-                        <svg className="icon" aria-hidden="true">
-                            <use xlinkHref="#icon-write"></use>
-                        </svg>
-                        { getPersonName(banker) }
+                    <div title="当前庄家">
+                        <span className="icon-wrapper">
+                            <svg className="icon" aria-hidden="true">
+                                <use xlinkHref="#icon-write"></use>
+                            </svg>
+                        </span>
+                        <span className="value">{ getPersonName(banker) }</span>
                     </div>
-                    <div>
-                        <svg className="icon" aria-hidden="true">
-                            <use xlinkHref="#icon-rank"></use>
-                        </svg>
+                    <div className="rank-wrapper">
                         { renderRankings(players) }
                     </div>
                 </section>
-                <section>
-
+                <section className="game-panel">
                     <canvas
                         className="canvas"
                         ref="canvas" width="600" height="400"
-                        style={{width: '80%', cursor: (status !== 'going' || !banker || banker.id !== user.id) ? 'default' : 'crosshair'}}
+                        style={{cursor: (status !== 'going' || !banker || banker.id !== user.id) ? 'default' : 'crosshair'}}
                     ></canvas>
-                    <div>
+                    <div className="controls">
                         {
                             strokeColors.map(color => {
                                 return (<span key={color} onClick={() => {

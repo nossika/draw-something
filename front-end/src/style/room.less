@@ -1,4 +1,88 @@
-.canvas {
-  background: #fff;
-  border-radius: 4px;
+
+.room-container {
+  margin: 20px;
+  display: grid;
+  grid-template-columns: auto 25%;
+  grid-template-rows: 100px 400px;
+  .game-block {
+    grid-area: ~"1 / 1 / 3 / 2";
+    .game-wrapper {
+      width: 100%;
+      height: 100%;
+      display: grid;
+      grid-template-columns: 20% auto;
+      grid-template-rows: auto;
+      .game-info {
+        overflow-y: auto;
+        .tip {
+          font-size: 14px;
+          color: #aaa;
+          display: flex;
+          justify-content: center;
+          margin-bottom: 6px;
+        }
+        .starter {
+          display: flex;
+          justify-content: center;
+          margin-bottom: 6px;
+        }
+        .value {
+          display: inline-block;
+          width: calc(~"100% - 35px");
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+        .rank-wrapper {
+          margin-top: 10px;
+          .table-row {
+            width: 100%;
+            display: flex;
+            > span {
+              display: inline-block;
+              text-align: center;
+            }
+            &:first-child {
+              color: #aaa;
+            }
+            .rank {
+              width: 42px;
+            }
+            .name {
+              width: auto;
+              flex-grow: 1;
+              &.off {
+                color: #aaa;
+              }
+            }
+            .score {
+              width: 42px;
+            }
+          }
+        }
+      }
+      .game-panel {
+        width: 100%;
+        height: 100%;
+        display: grid;
+        grid-template-columns: auto;
+        grid-template-rows: auto 80px;
+        .controls {
+
+        }
+        .canvas {
+          background: #fff;
+          border-radius: 4px;
+          width: 100%;
+          height: 100%;
+        }
+      }
+    }
+  }
+  .people-block {
+    grid-area: ~"1 / 2 / 2 / 3";
+  }
+  .chat-block {
+    grid-area: ~"2 / 2 / 3 / 3";
+  }
 }

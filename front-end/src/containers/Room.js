@@ -40,8 +40,7 @@ const renderMessageList = (messageList) => {
 @connect(
     state => ({
         currentRoom: state.room.currentRoom,
-        gameStatus: state.game.status,
-        user: state.user
+        user: state.user,
     }),
     dispatch => bindActionCreators({...roomActions}, dispatch)
 )
@@ -53,80 +52,72 @@ export default class Room extends Component {
         messageInputValue: ''
     };
     render () {
-        let { currentRoom, gameStatus, user } = this.props;
+        let { currentRoom } = this.props;
         let { owner, people, name } = currentRoom;
-        let isRoomOwner = owner && user.id === owner.id;
-
         return (
             <section>
                 <Header title={ name } type={'room'} />
-                <section className="control-block">
-                    {
-                        gameStatus === 'await' ?
-                            isRoomOwner ?
-                            <div className="btn btn-default btn-md" onClick={ wsAction.startGame }>开始游戏</div>
-                            : <div className="btn btn-default btn-md disabled">请等待房主开始游戏</div>
-                        : null
-
-                    }
+                <section className="room-container">
+                    <section className="game-block">
+                        <Game />
+                    </section>
+                    <section className="people-block">
+                        <div>
+                            <span className="icon-wrapper">
+                                <svg className="icon" aria-hidden="true">
+                                    <use xlinkHref="#icon-favor"></use>
+                                </svg>
+                            </span>
+                            <span>{ getPersonName(owner) }</span>
+                        </div>
+                        <div>
+                            <span className="icon-wrapper">
+                                <svg className="icon" aria-hidden="true">
+                                    <use xlinkHref="#icon-group"></use>
+                                </svg>
+                            </span>
+                            <span>
+                                {
+                                    people.filter(person => owner && person.id !== owner.id).map(person => {
+                                        return [
+                                            <span key={person.id}>
+                                                { getPersonName(person) }
+                                            </span>,
+                                            <br/>
+                                        ]
+                                    })
+                                }
+                            </span>
+                        </div>
+                    </section>
+                    <section className="chat-block">
+                        <div>
+                            <input
+                                className="input input-default input-md"
+                                placeholder="请输入内容"
+                                value={this.state.messageInputValue}
+                                onChange={
+                                    e => {
+                                        let messageInputValue = e.target.value;
+                                        this.setState({
+                                            messageInputValue
+                                        });
+                                    }
+                                }
+                                onKeyDown={e => e.keyCode === 13 && this.sendMessage()}
+                            />
+                            <span className={"btn btn-default btn-md" + (this.state.messageInputValue ? '' : ' disabled')} onClick={::this.sendMessage}>发送</span>
+                        </div>
+                        <div>
+                            {renderMessageList(currentRoom.messageList)}
+                        </div>
+                    </section>
                 </section>
-
-                <section className="game-block">
-                    <Game />
-
-                </section>
-                <section className="people-block">
-                    <div>
-                        <span className="icon-wrapper">
-                            <svg className="icon" aria-hidden="true">
-                                <use xlinkHref="#icon-favor"></use>
-                            </svg>
-                        </span>
-                        <span>{ getPersonName(owner) }</span>
-                    </div>
-                    <div>
-                        <span className="icon-wrapper">
-                            <svg className="icon" aria-hidden="true">
-                                <use xlinkHref="#icon-group"></use>
-                            </svg>
-                        </span>
-                        <span>
-                            {
-                                people.filter(person => person.id !== owner.id).map(person => {
-                                    return [
-                                        <span key={person.id}>
-                                            { getPersonName(person) }
-                                        </span>,
-                                        <br/>
-                                    ]
-                                })
-                            }
-                        </span>
-                    </div>
-                </section>
-                <section className="chat-block">
-                    <input
-                        className="input input-default input-md"
-                        value={this.state.messageInputValue}
-                        onChange={
-                            e => {
-                                let messageInputValue = e.target.value;
-                                this.setState({
-                                    messageInputValue
-                                });
-                            }
-                        }
-                        onKeyDown={::this.sendMessage}
-                    />
-                </section>
-                <div>
-                    {renderMessageList(currentRoom.messageList)}
-                </div>
             </section>
         )
     }
-    sendMessage (e) {
-        if (e.keyCode === 13) {
+    sendMessage () {
+        if (this.state.messageInputValue) {
             wsAction.sendRoomMessage(this.state.messageInputValue);
             this.setState({
                 messageInputValue: ''
