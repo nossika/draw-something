@@ -46,7 +46,7 @@ export default combineReducers({
                 return action.messageList !== undefined ? action.messageList : state;
             case 'RECEIVE_ROOM_MESSAGE':
                 let { by, content, timestamp, type } = action.message;
-                return state.concat({ by, content, timestamp, type });
+                return state.slice(0, 200).concat({ by, content, timestamp, type });
             default:
                 return state;
         }

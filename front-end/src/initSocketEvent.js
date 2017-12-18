@@ -1,12 +1,16 @@
-import store from '../reducers';
+import store from './reducers';
 import * as roomAction from 'actions/room';
 import * as networkActions from 'actions/network';
 import * as userActions from 'actions/user';
 import * as gameActions from 'actions/game';
 import * as errorActions from 'actions/error';
 import { canvasStroke$, canvasReset$ } from 'flow/canvas';
+import { message$ } from 'flow/message';
 import ls from 'api/localStorage';
 
+message$.subscribe(message => {
+    store.dispatch(roomAction.receiveRoomMessage(message));
+});
 export default (socket) => {
     // main
     socket.on('connect', () => {
@@ -34,7 +38,7 @@ export default (socket) => {
     socket.on('userData', d => {
         let id = ls.get('clientId');
         if (!id) {
-            id = '游客' + d.id.slice(0, 6);
+            id = d.id;
         }
         socket.emit('setClientId', id);
         ls.set('clientId', id, 2 * 60 * 60 * 1000);
@@ -42,6 +46,10 @@ export default (socket) => {
         let info = ls.get('clientInfo');
         if (info) {
             socket.emit('setClientInfo', info);
+        } else {
+            socket.emit('setClientInfo', {
+                name: '游客' + id.slice(0, 6)
+            });
         }
 
         store.dispatch(userActions.setUserData({
@@ -73,29 +81,29 @@ export default (socket) => {
     });
     socket.on('peopleEnterRoom', message => {
         store.dispatch(roomAction.addRoomPeople(message.sender));
-        store.dispatch(roomAction.receiveRoomMessage({
+        message$.next({
             timestamp: message.timestamp,
             type: 'system',
             by: message.sender,
             content: 'enter',
-        }));
+        });
     });
     socket.on('peopleLeaveRoom', message => {
         store.dispatch(roomAction.delRoomPeople(message.sender));
-        store.dispatch(roomAction.receiveRoomMessage({
+        message$.next({
             timestamp: message.timestamp,
             type: 'system',
             by: message.sender,
             content: 'leave',
-        }));
+        });
     });
     socket.on('roomMessage', message => {
-        store.dispatch(roomAction.receiveRoomMessage({
+        message$.next({
             timestamp: message.timestamp,
             type: 'message',
             by: message.sender || null,
             content: message.content,
-        }));
+        });
     });
     // game
     socket.on('setGameStatus', status => {

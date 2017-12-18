@@ -43,7 +43,7 @@ export default class Brush {
                         ctx.stroke();
                         break;
                     case 'eraser':
-                        ctx.clearRect(x - ctx.lineWidth, y - ctx.lineWidth, ctx.lineWidth * 2, ctx.lineWidth * 2);
+                        ctx.clearRect(x - ctx.lineWidth * 10, y - ctx.lineWidth * 10, ctx.lineWidth * 20, ctx.lineWidth * 20);
                         break;
                 }
             }

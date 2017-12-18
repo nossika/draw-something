@@ -21,7 +21,7 @@ const renderRankings = (players) => {
             <span className="rank">
                 { index + 1 }
             </span>
-            <span className={"name" + (player.online ? ' on' : ' off')}>
+            <span title={getPersonName(player)} className={"name" + (player.online ? ' on' : ' off')}>
                 { getPersonName(player) }
             </span>
             <span className="score">
@@ -29,19 +29,6 @@ const renderRankings = (players) => {
             </span>
         </div>
     ));
-    list.unshift(
-        <div className="table-row">
-            <span className="rank">
-                排名
-            </span>
-            <span className="name">
-                玩家
-            </span>
-            <span className="score">
-                积分
-            </span>
-        </div>
-    );
     return list;
 };
 const strokeColors = ['red', 'black', 'green'];
@@ -60,6 +47,7 @@ export default class Game extends Component {
         let { word, countDown, banker, players, status } = game;
         let { owner } = currentRoom;
         let isRoomOwner = owner && user.id === owner.id;
+        let isBanker = banker && banker.id === owner.id;
         return (
             <section className="game-wrapper">
                 <section className="game-info">
@@ -71,14 +59,19 @@ export default class Game extends Component {
                             </div>
                             : null
                     }
-                    <div title="目标词语">
-                        <span className="icon-wrapper">
-                            <svg className="icon" aria-hidden="true">
-                                <use xlinkHref="#icon-focus"></use>
-                            </svg>
-                        </span>
-                        <span className="value">{ word }</span>
-                    </div>
+                    {
+                        word ?
+                            <div title="目标词语" key={'target'}>
+                                <span className="icon-wrapper">
+                                    <svg className="icon" aria-hidden="true">
+                                        <use xlinkHref="#icon-focus"></use>
+                                    </svg>
+                                </span>
+                                <span className="value">{ word }</span>
+                            </div>
+                            : null
+                    }
+
                     <div title="倒计时">
                         <span className="icon-wrapper">
                             <svg className="icon" aria-hidden="true">
@@ -96,6 +89,17 @@ export default class Game extends Component {
                         <span className="value">{ getPersonName(banker) }</span>
                     </div>
                     <div className="rank-wrapper">
+                        <div key={''} className="table-row">
+                            <span className="rank">
+                                排名
+                            </span>
+                            <span className="name">
+                                玩家
+                            </span>
+                            <span className="score">
+                                积分
+                            </span>
+                        </div>
                         { renderRankings(players) }
                     </div>
                 </section>
@@ -108,13 +112,21 @@ export default class Game extends Component {
                     <div className="controls">
                         {
                             strokeColors.map(color => {
-                                return (<span key={color} onClick={() => {
-                                    this.syncStroke({ type: 'mode', mode: 'brush' });
-                                    this.syncStroke({ type: 'color', color });
-                                }}>{ color }</span>)
+                                return (
+                                    <div
+                                        key={color}
+                                        style={{background: color}}
+                                        className="color-brush"
+                                        onClick={() => {
+                                        this.syncStroke({ type: 'mode', mode: 'brush' });
+                                        this.syncStroke({ type: 'color', color });
+                                        }}
+                                    >
+                                    </div>
+                                )
                             })
                         }
-                        <span onClick={() => {this.syncStroke({ type: 'mode', mode: 'eraser' });}}>eraser</span>
+                        <div className="color-brush eraser" title="橡皮" onClick={() => {this.syncStroke({ type: 'mode', mode: 'eraser' });}}></div>
                     </div>
                 </section>
             </section>
@@ -134,7 +146,6 @@ export default class Game extends Component {
         setGamePlayers({});
         setGameWord('');
         setCanvasData({ strokes: [] });
-
     }
     componentDidMount () {
         window.addEventListener('resize', this.resizeCanvas);

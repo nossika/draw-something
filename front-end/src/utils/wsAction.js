@@ -5,6 +5,7 @@ import * as roomActions from 'actions/room';
 import * as networkActions from 'actions/network';
 import * as userActions from 'actions/user';
 import * as gameActions from 'actions/game';
+import { message$ } from 'flow/message';
 
 export default {
     enterRoom (roomName) {
@@ -20,12 +21,12 @@ export default {
         let userInfo = store.getState().user;
         socket.emit('sendRoomMessage', content, (res) => {
             if (!res.ok) return;
-            store.dispatch(roomActions.receiveRoomMessage({
+            message$.next({
                 content,
                 by: userInfo,
                 timestamp: res.timestamp,
                 type: 'message'
-            }));
+            });
         });
 
     },

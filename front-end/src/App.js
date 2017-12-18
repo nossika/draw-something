@@ -25,22 +25,20 @@ export default class App extends Component {
             )
         }
         return (
-            <section className="body">
-                <Router>
-                    <Switch>
-                        <Route path="/" exact component={ AsyncComponent(() => import('containers/Home')) }/>
-                        <Route
-                            path="/:roomName"
-                            render={
-                                ({ match }) => {
-                                    const Room = AsyncComponent(() => import('containers/Room'));
-                                    return <Room key={ match.params.roomName } roomName={ match.params.roomName }/>
-                                }
+            <Router>
+                <Switch>
+                    <Route path="/" exact component={ AsyncComponent(() => import('containers/Home')) }/>
+                    <Route
+                        path="/:roomName"
+                        render={
+                            ({ match }) => {
+                                const Room = AsyncComponent(() => import('containers/Room'));
+                                return <Room key={ match.params.roomName } roomName={ match.params.roomName }/>
                             }
-                        />
-                    </Switch>
-                </Router>
-            </section>
+                        }
+                    />
+                </Switch>
+            </Router>
         )
     }
     componentWillMount () {

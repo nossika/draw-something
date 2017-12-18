@@ -8,29 +8,33 @@ import Header from 'containers/Header';
 import wsAction from 'utils/wsAction';
 import { getFormatTime } from 'utils/formatter';
 import { getPersonName } from 'utils/main';
+import { message$ } from 'flow/message';
 
 const renderMessageList = (messageList) => {
     return (
         <div>
             {
                 messageList.map(message => {
-                    return (
-                        <div key={message.timestamp}>
-                            <div>
-                                <svg className="icon" aria-hidden="true">
-                                    <use xlinkHref="#icon-time"></use>
-                                </svg>
-                                <span>{ getFormatTime(message.timestamp) }</span>
+                    if (message.type === 'system') {
+                        return (
+                            <div className="message" key={message.timestamp}>
+                                <div className="info">
+                                    <span className="by">{ getPersonName(message.by) } { {'enter': '进入房间', 'leave': '离开房间'}[message.content] }</span>
+                                    <span className="time">{ getFormatTime(message.timestamp, 'HMS') }</span>
+                                </div>
                             </div>
-                            <div>
-                                <svg className="icon" aria-hidden="true">
-                                    <use xlinkHref="#icon-people"></use>
-                                </svg>
-                                <span>{ getPersonName(message.by) }</span>
+                        )
+                    } else {
+                        return (
+                            <div className="message" key={message.timestamp}>
+                                <div className="info">
+                                    <span className="by">{ getPersonName(message.by) }</span>
+                                    <span className="time">{ getFormatTime(message.timestamp, 'HMS') }</span>
+                                </div>
+                                <div className="content">{ message.content }</div>
                             </div>
-                            <div>{ message.content }</div>
-                        </div>
-                    )
+                        )
+                    }
                 })
             }
         </div>
@@ -62,7 +66,7 @@ export default class Room extends Component {
                         <Game />
                     </section>
                     <section className="people-block">
-                        <div>
+                        <div title="房主">
                             <span className="icon-wrapper">
                                 <svg className="icon" aria-hidden="true">
                                     <use xlinkHref="#icon-favor"></use>
@@ -71,46 +75,44 @@ export default class Room extends Component {
                             <span>{ getPersonName(owner) }</span>
                         </div>
                         <div>
-                            <span className="icon-wrapper">
-                                <svg className="icon" aria-hidden="true">
-                                    <use xlinkHref="#icon-group"></use>
-                                </svg>
-                            </span>
-                            <span>
-                                {
-                                    people.filter(person => owner && person.id !== owner.id).map(person => {
-                                        return [
-                                            <span key={person.id}>
-                                                { getPersonName(person) }
-                                            </span>,
-                                            <br/>
-                                        ]
-                                    })
-                                }
-                            </span>
+                            {
+                                people.filter(person => owner && person.id !== owner.id).map((person, index) => {
+                                    let personName = getPersonName(person);
+                                    return (
+                                        <div key={person.id}>
+                                            <span className="icon-wrapper" style={{visibility: index === 0 ? 'visible' : 'hidden'}}>
+                                                <svg className="icon" aria-hidden="true">
+                                                    <use xlinkHref="#icon-group"></use>
+                                                </svg>
+                                            </span>
+                                            <span title={personName}>
+                                                { personName }
+                                            </span>
+                                        </div>
+                                    )
+                                })
+                            }
                         </div>
                     </section>
-                    <section className="chat-block">
-                        <div>
-                            <input
-                                className="input input-default input-md"
-                                placeholder="请输入内容"
-                                value={this.state.messageInputValue}
-                                onChange={
-                                    e => {
-                                        let messageInputValue = e.target.value;
-                                        this.setState({
-                                            messageInputValue
-                                        });
-                                    }
+                    <section className="chat-block" ref="chat-block">
+                        { renderMessageList(currentRoom.messageList) }
+                    </section>
+                    <section className="input-block">
+                        <input
+                            className="input input-default input-md"
+                            placeholder="请输入内容"
+                            value={this.state.messageInputValue}
+                            onChange={
+                                e => {
+                                    let messageInputValue = e.target.value;
+                                    this.setState({
+                                        messageInputValue
+                                    });
                                 }
-                                onKeyDown={e => e.keyCode === 13 && this.sendMessage()}
-                            />
-                            <span className={"btn btn-default btn-md" + (this.state.messageInputValue ? '' : ' disabled')} onClick={::this.sendMessage}>发送</span>
-                        </div>
-                        <div>
-                            {renderMessageList(currentRoom.messageList)}
-                        </div>
+                            }
+                            onKeyDown={e => e.keyCode === 13 && this.sendMessage()}
+                        />
+                        <span className={"btn btn-default btn-md" + (this.state.messageInputValue ? '' : ' disabled')} onClick={::this.sendMessage}>发送</span>
                     </section>
                 </section>
             </section>
@@ -126,9 +128,15 @@ export default class Room extends Component {
     }
     componentDidMount () {
         let { roomName, currentRoom } = this.props;
+        this.message$$ = message$.subscribe(message => {
+            this.refs['chat-block'].scrollTop = this.refs['chat-block'].scrollHeight;
+        });
         if (currentRoom && currentRoom.name === roomName) return;
         // todo 处理此时socket还未连接上的情况
         wsAction.enterRoom(roomName);
+    }
+    componentWillUnmount () {
+        this.message$$.unsubscribe();
     }
 }
 

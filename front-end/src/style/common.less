@@ -18,9 +18,20 @@ html {
   font-size: 16px;
   color: @text-color;
   background: @info-bg;
+  height: 100%;
 }
 body {
+  box-sizing: border-box;
   padding-top: 60px;
+  height: 100%;
+}
+#app {
+  width: 100%;
+  height: 100%;
+  > section {
+    width: 100%;
+    height: 100%;
+  }
 }
 // iconfont
 .icon {
@@ -53,6 +64,7 @@ body {
 }
 
 // common
+
 .clickable{
   cursor: pointer;
 }

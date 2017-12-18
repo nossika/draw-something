@@ -1,19 +1,31 @@
-
+@import './func.less';
 .room-container {
-  margin: 20px;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  padding: 15px;
   display: grid;
   grid-template-columns: auto 25%;
-  grid-template-rows: 100px 400px;
+  grid-template-rows: auto 50% 40px;
+  grid-gap: 15px;
   .game-block {
-    grid-area: ~"1 / 1 / 3 / 2";
+    grid-area: ~"1 / 1 / 4 / 2";
     .game-wrapper {
       width: 100%;
       height: 100%;
       display: grid;
       grid-template-columns: 20% auto;
       grid-template-rows: auto;
+      grid-gap: 15px;
       .game-info {
+        overflow-x: hidden;
         overflow-y: auto;
+        padding: 10px;
+        background: #fff;
+        border-radius: 4px;
+        > div > span {
+          vertical-align: middle;
+        }
         .tip {
           font-size: 14px;
           color: #aaa;
@@ -29,9 +41,7 @@
         .value {
           display: inline-block;
           width: calc(~"100% - 35px");
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
+          .ellipsis();
         }
         .rank-wrapper {
           margin-top: 10px;
@@ -49,8 +59,8 @@
               width: 42px;
             }
             .name {
-              width: auto;
-              flex-grow: 1;
+              width: calc(~"100% - 84px");
+              .ellipsis();
               &.off {
                 color: #aaa;
               }
@@ -66,9 +76,38 @@
         height: 100%;
         display: grid;
         grid-template-columns: auto;
-        grid-template-rows: auto 80px;
+        grid-template-rows: auto 40px;
+        grid-gap: 15px;
         .controls {
-
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          .color-brush {
+            display: block;
+            width: 30px;
+            height: 30px;
+            box-sizing: border-box;
+            margin: 0 5px;
+            cursor: pointer;
+            border: 4px solid #fff;
+            border-radius: 100%;
+            &.active {
+              box-shadow: 1px 1px 1px 5px rgba(0,0,0,.2);
+            }
+            &.eraser {
+              overflow: hidden;
+              position: relative;
+              &::after {
+                content: '';
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                width: 30px;
+                height: 10px;
+                background: #fff;
+              }
+            }
+          }
         }
         .canvas {
           background: #fff;
@@ -81,8 +120,47 @@
   }
   .people-block {
     grid-area: ~"1 / 2 / 2 / 3";
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding: 10px;
+    background: #fff;
+    border-radius: 4px;
+    div {
+      width: 100%;
+      .ellipsis();
+      > span {
+        vertical-align: middle;
+      }
+
+    }
   }
   .chat-block {
     grid-area: ~"2 / 2 / 3 / 3";
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding: 10px;
+    background: #fff;
+    border-radius: 4px;
+    .message {
+      text-align: left;
+      margin-bottom: 10px;
+      .info {
+        color: #aaa;
+        font-size: 12px;
+        .time {
+          float: right;
+        }
+      }
+
+    }
+  }
+  .input-block {
+    grid-area: ~"3 / 2 / 4 / 3";
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    > input {
+      margin-right: 10px;
+    }
   }
 }

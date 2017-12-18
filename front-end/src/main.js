@@ -6,7 +6,7 @@ import store from './reducers';
 import 'lib/iconfont';
 import 'style/index.less';
 import socket from 'api/socketIo';
-import initSocketEvent from 'utils/initSocketEvent';
+import initSocketEvent from './initSocketEvent';
 initSocketEvent(socket);
 
 
