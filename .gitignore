@@ -1,7 +1,4 @@
-/front-end/node_modules
-/front-end/.idea
-/server/node_modules
 /server/.idea
-/front-end/package-lock.json
-/server/package-lock.json
-/front-end/dist
+/server/node_modules
+/FE/.idea
+/FE/node_modules
