@@ -46,6 +46,20 @@ export default class Header extends Component {
         return (
             <section className="fixed-header">
                 <div className="item left">
+                    {
+                        webSocketStatus
+                            ? null
+                            : (
+                                <span
+                                    className={ `item wifi ${'alert-color'}` }
+                                    title={'网络出错'}
+                                >
+                                    <svg className="icon" aria-hidden="true">
+                                        <use xlinkHref="#icon-wifi"></use>
+                                    </svg>
+                                </span>
+                            )
+                    }
                     <span>
                         { typeNode(type) }
                     </span>
@@ -117,20 +131,7 @@ export default class Header extends Component {
 
 
                 </div>
-                {
-                    webSocketStatus
-                        ? null
-                        : (
-                            <div
-                                className={ `item wifi ${'alert-color'}` }
-                                title={'网络出错'}
-                            >
-                                <svg className="icon" aria-hidden="true">
-                                    <use xlinkHref="#icon-wifi"></use>
-                                </svg>
-                            </div>
-                        )
-                }
+
 
             </section>
         )

@@ -83,18 +83,27 @@ export default (socket) => {
         store.dispatch(roomAction.addRoomPeople(message.sender));
         message$.next({
             timestamp: message.timestamp,
-            type: 'system',
+            type: 'enter',
             by: message.sender,
-            content: 'enter',
         });
     });
     socket.on('peopleLeaveRoom', message => {
         store.dispatch(roomAction.delRoomPeople(message.sender));
         message$.next({
             timestamp: message.timestamp,
-            type: 'system',
+            type: 'leave',
             by: message.sender,
-            content: 'leave',
+        });
+    });
+    socket.on('clientInfoChange', message => {
+        message$.next({
+            timestamp: message.timestamp,
+            type: 'info-change',
+            by: message.sender,
+            content: {
+                old: message.old,
+                info: message.info,
+            },
         });
     });
     socket.on('roomMessage', message => {

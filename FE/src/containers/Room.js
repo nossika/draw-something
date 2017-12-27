@@ -15,25 +15,36 @@ const renderMessageList = (messageList) => {
         <div>
             {
                 messageList.map(message => {
-                    if (message.type === 'system') {
-                        return (
-                            <div className="message" key={message.timestamp}>
-                                <div className="info">
-                                    <span className="by">{ getPersonName(message.by) } { {'enter': '进入房间', 'leave': '离开房间'}[message.content] }</span>
-                                    <span className="time">{ getFormatTime(message.timestamp, 'HMS') }</span>
+                    switch (message.type) {
+                        case 'enter':
+                        case 'leave':
+                            return (
+                                <div className="message" key={message.timestamp}>
+                                    <div className="info system">
+                                        <span className="by">{ getPersonName(message.by) } { {'enter': '进入房间', 'leave': '离开房间'}[message.type] }</span>
+                                    </div>
                                 </div>
-                            </div>
-                        )
-                    } else {
-                        return (
-                            <div className="message" key={message.timestamp}>
-                                <div className="info">
-                                    <span className="by">{ getPersonName(message.by) }</span>
-                                    <span className="time">{ getFormatTime(message.timestamp, 'HMS') }</span>
+                            );
+                        case 'info-change':
+                            return (
+                                <div className="message" key={message.timestamp}>
+                                    <div className="info system">
+                                        <span className="by">{ message.content.old.name } 改名为 { message.content.info.name }</span>
+                                    </div>
                                 </div>
-                                <div className="content">{ message.content }</div>
-                            </div>
-                        )
+                            );
+                        case 'message':
+                            return (
+                                <div className="message" key={message.timestamp}>
+                                    <div className="info">
+                                        <span className="by">{ getPersonName(message.by) }</span>
+                                        <span className="time">{ getFormatTime(message.timestamp, 'HMS') }</span>
+                                    </div>
+                                    <div className="content">{ message.content }</div>
+                                </div>
+                            );
+                        default:
+                            return null;
                     }
                 })
             }

@@ -57,7 +57,15 @@ const handler = {
         }
     },
     setClientInfo (info, cb) { // set client info
+        let old = Object.assign({}, this.info);
         Object.assign(this.info, info);
+        this.room && this.room.broadcast({
+            channel: 'clientInfoChange',
+            data: {
+                old,
+                info,
+            },
+        });
         this.emitSuccessMsg({ cb });
     },
     sendRoomMessage (content, cb) { // send message in room
