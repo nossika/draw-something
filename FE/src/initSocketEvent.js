@@ -7,6 +7,8 @@ import * as errorActions from 'actions/error';
 import { canvasStroke$, canvasReset$ } from 'flow/canvas';
 import { message$ } from 'flow/message';
 import ls from 'api/localStorage';
+import { nicknames } from 'config';
+import { random } from 'utils/main';
 
 message$.subscribe(message => {
     store.dispatch(roomAction.receiveRoomMessage(message));
@@ -43,17 +45,13 @@ export default (socket) => {
         socket.emit('setClientId', id);
         ls.set('clientId', id, 2 * 60 * 60 * 1000);
 
-        let info = ls.get('clientInfo');
-        if (info) {
-            socket.emit('setClientInfo', info);
-        } else {
-            socket.emit('setClientInfo', {
-                name: '游客' + id.slice(0, 6)
-            });
-        }
-
+        let info = ls.get('clientInfo') || {
+            name: nicknames.adj[random(nicknames.adj.length)] + '的' + nicknames.role[random(nicknames.role.length)],
+        };
+        socket.emit('setClientInfo', info);
         store.dispatch(userActions.setUserData({
-            id
+            id,
+            info,
         }));
     });
     // room

@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux'
 import Brush from 'utils/brush';
@@ -8,6 +7,7 @@ import wsAction from 'utils/wsAction';
 import { canvasStroke$, canvasReset$ } from 'flow/canvas';
 import * as gameActions from 'actions/game';
 import { getPersonName } from 'utils/main';
+import { strokeColors } from 'config';
 
 const renderRankings = (players) => {
     let list = [];
@@ -31,7 +31,6 @@ const renderRankings = (players) => {
     ));
     return list;
 };
-const strokeColors = ['red', 'black', 'green'];
 
 @connect(
     state => ({

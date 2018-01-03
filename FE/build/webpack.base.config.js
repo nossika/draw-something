@@ -49,6 +49,7 @@ const config = {
             'flow': path.resolve(__dirname, '../src/flow'),
             'style': path.resolve(__dirname, '../src/style'),
             'lib': path.resolve(__dirname, '../src/lib'),
+            'config': path.resolve(__dirname, '../src/config'),
         }
     },
     plugins: [
