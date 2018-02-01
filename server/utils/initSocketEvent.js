@@ -4,14 +4,20 @@ const Client = require('../models/Client');
 
 module.exports = (IO) => {
     setInterval(() => {
-        IO.emit('roomList', util.getRoomList());
+        let roomList = util.getRoomList();
+        for (let client of CLIENTS_MAP.values()) {
+            if (client.room) continue;
+            client.io.emit('roomList', roomList);
+        }
     }, 1000);
-    IO.on('connection', client => {
-        CLIENTS_MAP.set(client.id, new Client({
-            client
-        }));
-        client.emit('userData', util.clientData(client));
-        client.emit('roomList', util.getRoomList());
+
+    IO.on('connection', io => {
+        let client = new Client({
+            io
+        });
+        CLIENTS_MAP.set(io.id, client);
+        io.emit('userData', util.clientData(client));
+        io.emit('roomList', util.getRoomList());
     });
 };
 

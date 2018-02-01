@@ -132,19 +132,21 @@ const handler = {
 
 module.exports = class Client {
     constructor ({
-        client
+        io
     }) {
-        this.io = client;
-        Object.defineProperty(this, 'id', {
-            enumerable: true,
-            get () {
-                return this.io.id;
-            }
+        this.io = io;
+        Object.defineProperties(this, {
+            id: {
+                enumerable: true,
+                get () {
+                    return this.io.id;
+                }
+            },
         });
         this.info = {};
         this.room = null;
         for (let event in handler) {
-            client.on(event, handler[event].bind(this));
+            io.on(event, handler[event].bind(this));
         }
     }
     emitSuccessMsg ({ content, cb }) {
