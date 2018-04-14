@@ -1,11 +1,12 @@
 const util = require('../utils');
 const Client = require('./Client.js');
 const CLIENTS_MAP = global.CLIENTS_MAP;
+const ROOMS_MAP = global.ROOMS_MAP;
 
-module.exports = class Room {
+class Room {
     constructor ({
-        name,
-    }) {
+                     name,
+                 }) {
         this.clientIdList = new Set(); // <Client>
         this.owner = null;
         this.name = name;
@@ -24,19 +25,26 @@ module.exports = class Room {
             exclude: [],
         });
 
+        clearTimeout(this._destoryTimer);
+
         if (this.clientIdList.size === 1) {
             this.setOwner(client);
         }
 
-        if (this.game && this.game.playersMap.has(client.id)) {
-            this.game.playerReconnect(client);
+        if (this.game) {
+            this.game.peopleConnect(client);
         }
     }
     peopleLeave (client, mute) {
         this.clientIdList.delete(client.id);
 
         if (this.clientIdList.size === 0) {
-            this._emit('roomEmpty', this);
+            this._destoryTimer = setTimeout(() => {
+                if (this.game) {
+                    this.game.gameEnd();
+                }
+                this._emit('roomEmpty', this);
+            }, 10000);
         } else if (client === this.owner) {
             for (let firstClientId of this.clientIdList) {
                 this.setOwner(CLIENTS_MAP.get(firstClientId));
@@ -98,4 +106,14 @@ module.exports = class Room {
             this._handler[event].forEach(fn => fn(params));
         }
     }
+}
+
+Room.create = function (roomName) {
+    let room = new Room({ name: roomName });
+    room.on('roomEmpty', room => {
+        ROOMS_MAP.delete(room.name);
+    });
+    ROOMS_MAP.set(roomName, room);
 };
+
+module.exports = Room;

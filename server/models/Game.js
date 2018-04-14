@@ -1,6 +1,6 @@
 const util = require('../utils');
 const Rx = require('rxjs/Rx');
-const CLIENTS_EMITTER = global.CLIENTS_EMITTER;
+
 const ClIENTS_MAP = global.CLIENTS_MAP;
 function pickWord (wordList) {
     return wordList.splice(Math.random() * wordList.length | 0, 1)[0]
@@ -46,31 +46,21 @@ module.exports = class Game {
         this.canvasData = [];
     }
     broadcast ({ channel, data, exclude }) {
-        exclude = exclude
-            ? (Array.isArray(exclude)
-                ? exclude
-                : [exclude])
-            : [];
-        for (let clientId of this.playersMap.keys()) {
-            if (exclude.includes(clientId)) continue;
-            CLIENTS_EMITTER[clientId](channel, data);
-        }
+        this._emit('broadcast', { channel, data, exclude });
     }
     playerLeave (client) {
         let player = this.playersMap.get(client.id);
         if (!player) return;
         player.online = false;
-        let isAllLeave = [...this.playersMap.values()].every(player => !player.online);
-        if (isAllLeave) {
-            this.gameEnd();
-            return;
-        }
+        // let isAllLeave = [...this.playersMap.values()].every(player => !player.online);
+        // if (isAllLeave) {
+        //     this.gameEnd();
+        //     return;
+        // }
         this.broadcast({ channel: 'setGamePlayers', data: util.map2Obj(this.playersMap) });
     }
-    playerReconnect (client) { // todo
+    peopleConnect (client) { // todo
         let player = this.playersMap.get(client.id);
-        if (!player) return;
-        player.online = true;
         client.io.emit('setGameStatus', this.status);
         client.io.emit('setGameCountDown', this.roundCountDown);
         client.io.emit('setGameBanker', util.clientData(ClIENTS_MAP.get(this.bankerId)));
@@ -78,6 +68,8 @@ module.exports = class Game {
             client.io.emit('roundWord', this.word);
         }
         client.io.emit('initCanvas', this.canvasData);
+        if (!player) return;
+        player.online = true;
         this.broadcast({ channel: 'setGamePlayers', data: util.map2Obj(this.playersMap) });
     }
     gameStart () {

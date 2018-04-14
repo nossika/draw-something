@@ -1,5 +1,6 @@
 const ROOMS_MAP = global.ROOMS_MAP;
 const CLIENTS_MAP = global.CLIENTS_MAP;
+const CLIENTS_EMITTER = global.CLIENTS_EMITTER;
 const Room = require('./Room');
 const Game = require('./Game');
 const words = require('../resource/words');
@@ -14,14 +15,7 @@ const handler = {
         if (this.room) this.room.peopleLeave(this);
 
         if (!ROOMS_MAP.has(roomName)) {
-            let room = new Room({ name: roomName });
-            room.on('roomEmpty', room => {
-                clearTimeout(room._timer);
-                room._timer = setTimeout(() => {
-                    ROOMS_MAP.delete(room.name);
-                });
-            });
-            ROOMS_MAP.set(roomName, room);
+            Room.create(roomName);
         }
 
         this.room = ROOMS_MAP.get(roomName);
@@ -51,8 +45,8 @@ const handler = {
             this.room.clientIdList.delete(prevId);
             this.room.clientIdList.add(curId);
             this.room.updateRoomInfo();
-            if (this.room.game && this.room.game.playersMap.has(curId)) {
-                this.room.game.playerReconnect(this);
+            if (this.room.game) {
+                this.room.game.peopleConnect(this);
             }
         }
     },
@@ -107,7 +101,23 @@ const handler = {
             playerIdList: room.clientIdList,
             wordList: words.idiom
         });
+
+        room.game.on('broadcast', ({ channel, data, exclude }) => {
+            // room.broadcast({ channel, data, exclude });
+            exclude = exclude
+                ? (Array.isArray(exclude)
+                    ? exclude
+                    : [exclude])
+                : [];
+            for (let clientId of room.clientIdList) {
+                if (exclude.includes(clientId)) continue;
+                CLIENTS_EMITTER[clientId](channel, data);
+            }
+        });
+
         room.game.gameStart();
+
+
 
         room.game.on('gameEnd', () => {
             room.game = null;
