@@ -170,15 +170,7 @@ module.exports = class Game {
             this._bankerIdGenerator = this.playersMap.keys();
             item = this._bankerIdGenerator.next();
         }
-        if (this.currentRound >= this.rounds) {
-            this.gameEnd();
-            this.status = 'await';
-            this.broadcast({
-                channel: 'setGameStatus',
-                data: this.status
-            });
-            return;
-        }
+
         this.bankerId = item.value;
 
         this.roundCountDown = this.pendingTime;
@@ -191,7 +183,19 @@ module.exports = class Game {
                     channel: 'setGameCountDown',
                     data: countDown
                 });
+
+
+
                 if (countDown <= 0) {
+                    if (this.currentRound >= this.rounds) {
+                        this.gameEnd();
+                        this.status = 'await';
+                        this.broadcast({
+                            channel: 'setGameStatus',
+                            data: this.status
+                        });
+                        return;
+                    }
                     this.roundStart();
                 }
             })

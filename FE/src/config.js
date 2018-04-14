@@ -2,6 +2,7 @@ export const env = process.env.NODE_ENV || 'develop';
 
 export const strokeColors = [
     '#000',
+    '#108ee9',
     'rgba(137,196,166,1)',
     'rgba(64,132,109,1)',
     'rgba(207,167,69,1)',

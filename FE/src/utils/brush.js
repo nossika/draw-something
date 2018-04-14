@@ -8,14 +8,40 @@ export default class Brush {
         this.mode = 'brush';
         this.ctx.strokeStyle = color;
         this.ctx.lineWidth = lineWidth;
+        this.strokes = [];
     }
     redraw (strokes) {
+        strokes = (strokes || []).slice();
+        let revokeIndex;
+        revokeLoop: while ((revokeIndex = strokes.findIndex(stroke => stroke.type === 'revoke')) !== -1) {
+            let beginIndex = 0;
+            let endIndex = revokeIndex - 1;
+            strokes.splice(revokeIndex, 1);
+            for (let i = revokeIndex - 1; i > 0; i--) {
+                if (strokes[i].type === 'end') {
+                    endIndex = i;
+                } else if (strokes[i].type === 'begin') {
+                    beginIndex = i;
+                    strokes.splice(beginIndex, endIndex - beginIndex + 1);
+                    continue revokeLoop;
+                }
+            }
+            strokes.splice(beginIndex, endIndex - beginIndex + 1);
+        }
+        this.strokes = strokes;
         let { width, height } = this.ctx.canvas;
         this.ctx.clearRect(0, 0, width, height);
-        if (strokes) {
-            for (let stroke of strokes) {
-                this.draw(stroke);
-            }
+        this.ctx.strokeStyle = '#000';
+        for (let stroke of strokes) {
+            this.draw(stroke);
+        }
+    }
+    exec (stroke) {
+        this.strokes.push(stroke);
+        if (stroke.type === 'revoke') {
+            this.redraw(this.strokes);
+        } else {
+            this.draw(stroke);
         }
     }
     draw (stroke) {

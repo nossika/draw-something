@@ -42,7 +42,7 @@ const renderRankings = (players) => {
 )
 export default class Game extends Component {
     state = {
-        color: '',
+        color: '#000',
     };
     render () {
         let { game, user, currentRoom } = this.props;
@@ -55,20 +55,18 @@ export default class Game extends Component {
                 <section className="game-info">
                     <div className="tip">{ {pending: '等待下个回合', going: '进行中', await: '等待房主开始游戏'}[status] }</div>
 
-                    {
-                        word ?
-                            <div className="row" key={'target'}>
-                                <span className="key">目标词语</span>
-                                <span className="value key-word">{ word }</span>
-                            </div>
-                            : null
-                    }
+
                     {
                         status === 'await'
                         ? null
                         : [
+                            <div key='word' className="row">
+                                <span className="key">目标词语</span>
+                                <span className="value key-word">{ word || '?' }</span>
+                            </div>,
                             <div key="time" className="row">
-                                <span className="key">回合时间</span>
+                                <span className="key">{{'pending': '下个回合', 'going': '剩余时间'}[status]}</span>
+
                                 <span className="value">{ countDown || '' }</span>
                             </div>,
                             <div key="host" className="row">
@@ -123,16 +121,20 @@ export default class Game extends Component {
                                 )
                             })
                         }
-                        <div className={`color-brush eraser ${this.state.color === '_eraser' ? 'active' : ''}`}
-                             title="橡皮"
-                             onClick={() => {this.syncStroke({ type: 'mode', mode: 'eraser' });}}>
+                        {/*<div className={`color-brush eraser ${this.state.color === '_eraser' ? 'active' : ''}`}*/}
+                             {/*title="橡皮"*/}
+                             {/*onClick={() => {this.syncStroke({ type: 'mode', mode: 'eraser' });}}>*/}
+                        {/*</div>*/}
+                        <div className={`color-brush eraser`}
+                             title="撤销"
+                             onClick={() => {this.syncStroke({ type: 'revoke' });}}>
                         </div>
                     </div>
                 </section>
             </section>
         );
     }
-    resizeCanvas = function () {
+    redrawCanvas = function () {
         const canvas = this.refs.canvas;
         canvas.width = canvas.offsetWidth;
         canvas.height = canvas.offsetHeight;
@@ -148,7 +150,7 @@ export default class Game extends Component {
         setCanvasData({ strokes: [] });
     }
     componentDidMount () {
-        window.addEventListener('resize', this.resizeCanvas);
+        window.addEventListener('resize', this.redrawCanvas);
         this.brush = new Brush({ canvas: this.refs.canvas });
         this.canvasStroke$$ = canvasStroke$.subscribe(stroke => this.syncStroke(stroke, true));
         this.canvasReset$$ = canvasReset$.subscribe(() => this.resetCanvas());
@@ -179,14 +181,14 @@ export default class Game extends Component {
 
         // todo: redraw after state changed
         setTimeout(() => {
-            this.resizeCanvas();
+            this.redrawCanvas();
         });
     }
     componentWillUnmount () {
         this.mouseEvent$$.unsubscribe();
         this.canvasReset$$.unsubscribe();
         this.canvasStroke$$.unsubscribe();
-        window.removeEventListener('resize', this.resizeCanvas);
+        window.removeEventListener('resize', this.redrawCanvas);
     }
     syncStroke (stroke, fromServer) {
         let { game, user, pushCanvasStroke } = this.props;
@@ -204,7 +206,7 @@ export default class Game extends Component {
         }
 
         pushCanvasStroke(stroke);
-        this.brush.draw(stroke);
+        this.brush.exec(stroke);
         !fromServer && wsAction.emitCanvasStroke(stroke);
     }
     resetCanvas () {
@@ -212,6 +214,9 @@ export default class Game extends Component {
         setCanvasData({
             size: [this.refs.canvas.width, this.refs.canvas.height],
             strokes: []
+        });
+        this.setState({
+            color: '#000'
         });
         this.brush.redraw();
     }
