@@ -41,6 +41,9 @@ const renderRankings = (players) => {
     dispatch => bindActionCreators({...gameActions}, dispatch)
 )
 export default class Game extends Component {
+    state = {
+        color: '',
+    };
     render () {
         let { game, user, currentRoom } = this.props;
         let { word, countDown, banker, players, status } = game;
@@ -51,6 +54,30 @@ export default class Game extends Component {
             <section className="game-wrapper">
                 <section className="game-info">
                     <div className="tip">{ {pending: '等待下个回合', going: '进行中', await: '等待房主开始游戏'}[status] }</div>
+
+                    {
+                        word ?
+                            <div className="row" key={'target'}>
+                                <span className="key">目标词语</span>
+                                <span className="value key-word">{ word }</span>
+                            </div>
+                            : null
+                    }
+                    {
+                        status === 'await'
+                        ? null
+                        : [
+                            <div key="time" className="row">
+                                <span className="key">回合时间</span>
+                                <span className="value">{ countDown || '' }</span>
+                            </div>,
+                            <div key="host" className="row">
+                                <span className="key">庄家</span>
+                                <span className="value">{ getPersonName(banker) }</span>
+                            </div>
+                          ]
+                    }
+
                     {
                         status === 'await' && isRoomOwner ?
                             <div className="starter">
@@ -58,35 +85,6 @@ export default class Game extends Component {
                             </div>
                             : null
                     }
-                    {
-                        word ?
-                            <div title="目标词语" key={'target'}>
-                                <span className="icon-wrapper">
-                                    <svg className="icon" aria-hidden="true">
-                                        <use xlinkHref="#icon-focus"></use>
-                                    </svg>
-                                </span>
-                                <span className="value">{ word }</span>
-                            </div>
-                            : null
-                    }
-
-                    <div title="倒计时">
-                        <span className="icon-wrapper">
-                            <svg className="icon" aria-hidden="true">
-                                <use xlinkHref="#icon-countdown"></use>
-                            </svg>
-                        </span>
-                        <span className="value">{ countDown || '' }</span>
-                    </div>
-                    <div title="当前庄家">
-                        <span className="icon-wrapper">
-                            <svg className="icon" aria-hidden="true">
-                                <use xlinkHref="#icon-write"></use>
-                            </svg>
-                        </span>
-                        <span className="value">{ getPersonName(banker) }</span>
-                    </div>
                     <div className="rank-wrapper">
                         <div key={''} className="table-row">
                             <span className="rank">
@@ -108,24 +106,27 @@ export default class Game extends Component {
                         ref="canvas" width="600" height="400"
                         style={{cursor: (status !== 'going' || !banker || banker.id !== user.id) ? 'default' : 'crosshair'}}
                     ></canvas>
-                    <div className="controls">
+                    <div className="controls" ref="controls">
                         {
                             strokeColors.map(color => {
                                 return (
                                     <div
                                         key={color}
                                         style={{background: color}}
-                                        className="color-brush"
+                                        className={`color-brush ${this.state.color === color ? 'active' : ''}`}
                                         onClick={() => {
-                                        this.syncStroke({ type: 'mode', mode: 'brush' });
-                                        this.syncStroke({ type: 'color', color });
+                                            this.syncStroke({ type: 'mode', mode: 'brush' });
+                                            this.syncStroke({ type: 'color', color });
                                         }}
                                     >
                                     </div>
                                 )
                             })
                         }
-                        <div className="color-brush eraser" title="橡皮" onClick={() => {this.syncStroke({ type: 'mode', mode: 'eraser' });}}></div>
+                        <div className={`color-brush eraser ${this.state.color === '_eraser' ? 'active' : ''}`}
+                             title="橡皮"
+                             onClick={() => {this.syncStroke({ type: 'mode', mode: 'eraser' });}}>
+                        </div>
                     </div>
                 </section>
             </section>
@@ -192,6 +193,16 @@ export default class Game extends Component {
 
         // if game is not going or you are not the banker, stroke event would be ignored
         if (!fromServer && (game.status !== 'going' || !game.banker || game.banker.id !== user.id)) return;
+        if (stroke.type === 'color') {
+            this.setState({
+                color: stroke.color,
+            });
+        } else if (stroke.type === 'mode' && stroke.mode === 'eraser') {
+            this.setState({
+                color: '_eraser',
+            });
+        }
+
         pushCanvasStroke(stroke);
         this.brush.draw(stroke);
         !fromServer && wsAction.emitCanvasStroke(stroke);

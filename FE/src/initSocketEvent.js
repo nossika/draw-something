@@ -3,15 +3,20 @@ import * as roomAction from 'actions/room';
 import * as networkActions from 'actions/network';
 import * as userActions from 'actions/user';
 import * as gameActions from 'actions/game';
+import * as updaterActions from 'actions/updater';
 import * as errorActions from 'actions/error';
 import { canvasStroke$, canvasReset$ } from 'flow/canvas';
 import { message$ } from 'flow/message';
+import { userUpdate$ } from 'flow/updater';
 import ls from 'api/localStorage';
 import { nicknames } from 'config';
 import { random } from 'utils/main';
 
 message$.subscribe(message => {
     store.dispatch(roomAction.receiveRoomMessage(message));
+});
+userUpdate$.subscribe(message => {
+    store.dispatch(updaterActions.updateUserData(message));
 });
 export default (socket) => {
     // main
@@ -48,6 +53,11 @@ export default (socket) => {
         let info = ls.get('clientInfo') || {
             name: nicknames.adj[random(nicknames.adj.length)] + '的' + nicknames.role[random(nicknames.role.length)],
         };
+        if (!ls.get('clientInfo')) {
+            ls.set('clientInfo', {
+                name: nicknames.adj[random(nicknames.adj.length)] + '的' + nicknames.role[random(nicknames.role.length)],
+            }, 7 * 24 * 60 * 60 * 1000);
+        }
         socket.emit('setClientInfo', info);
         store.dispatch(userActions.setUserData({
             id,
@@ -94,6 +104,7 @@ export default (socket) => {
         });
     });
     socket.on('clientInfoChange', message => {
+        userUpdate$.next(message);
         message$.next({
             timestamp: message.timestamp,
             type: 'info-change',

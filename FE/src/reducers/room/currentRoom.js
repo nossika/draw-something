@@ -16,6 +16,17 @@ export default combineReducers({
     },
     owner (state = initialOwner, action) {
         switch (action.type) {
+            case 'UPDATE_USER_DATA':
+            {
+                if (state && (state.id === action.id)) {
+                    return Object.assign({}, state, {
+                        id: action.id,
+                        info: action.info,
+                    });
+                } else {
+                    return state;
+                }
+            }
             case 'SET_ROOM_INFO':
                 return action.owner !== undefined ? action.owner : state;
             default:
@@ -24,6 +35,22 @@ export default combineReducers({
     },
     people (state = initialPeople, action) {
         switch (action.type) {
+            case 'UPDATE_USER_DATA':
+            {
+                let index = state.findIndex(people => {
+                    return people.id === action.id
+                });
+
+                if (index !== -1) {
+                    let newState = state.slice();
+                    newState.splice(index, 1, Object.assign({}, state[index], {
+                        id: action.id,
+                        info: action.info,
+                    }));
+                    return newState;
+                }
+                return state;
+            }
             case 'SET_ROOM_INFO':
                 return action.people !== undefined ? action.people : state;
             case 'ADD_ROOM_PEOPLE':

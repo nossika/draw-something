@@ -24,7 +24,7 @@ export default class Home extends Component {
             <section>
                 <Header title="首页" type={'home'}/>
                 <section className="home-container">
-                    <section className="input-wrapper">
+                    <section className="input-wrapper input-group input-btn">
                         <input
                             className="input input-default input-lg"
                             placeholder="输入房间名"
@@ -57,27 +57,15 @@ export default class Home extends Component {
                                     key={roomName}
                                 >
                                     <div className="row">
-                                        <span className="icon-wrapper">
-                                            <svg className="icon" aria-hidden="true">
-                                                <use xlinkHref="#icon-home"></use>
-                                            </svg>
-                                        </span>
+                                        <span className="key">房间</span>
                                         <span className="value">{roomName}</span>
                                     </div>
                                     <div className="row">
-                                        <span className="icon-wrapper">
-                                            <svg className="icon" aria-hidden="true">
-                                                <use xlinkHref="#icon-group"></use>
-                                            </svg>
-                                        </span>
+                                        <span className="key">人数</span>
                                         <span className="value">{peopleCount}</span>
                                     </div>
                                     <div className="row">
-                                        <span className="icon-wrapper">
-                                            <svg className="icon" aria-hidden="true">
-                                                <use xlinkHref="#icon-favor"></use>
-                                            </svg>
-                                        </span>
+                                        <span className="key">房主</span>
                                         <span className="value">{ getPersonName(owner) }</span>
                                     </div>
                                 </Link>
@@ -95,6 +83,7 @@ export default class Home extends Component {
     }
     componentDidMount () {
         let { setRoomInfo } = this.props;
+        document.title = `你画我猜online`;
         wsAction.leaveRoom();
         setRoomInfo({ roomName: '' });
     }

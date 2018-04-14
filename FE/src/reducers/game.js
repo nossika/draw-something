@@ -29,6 +29,17 @@ export default combineReducers({
     },
     banker (state = initialBanker, action) {
         switch (action.type) {
+            case 'UPDATE_USER_DATA':
+            {
+                if (state && (state.id === action.id)) {
+                    return Object.assign({}, state, {
+                        id: action.id,
+                        info: action.info,
+                    });
+                } else {
+                    return state;
+                }
+            }
             case 'SET_GAME_BANKER':
                 return action.banker;
             default:
@@ -37,6 +48,16 @@ export default combineReducers({
     },
     players (state = initialPlayers, action) {
         switch (action.type) {
+            case 'UPDATE_USER_DATA':
+            {
+                let newState = Object.assign({}, state);
+                let player = newState[action.id];
+                if (player) {
+                    newState[action.id] = Object.assign({}, player);
+                    newState[action.id].info.name = action.info.name;
+                }
+                return newState;
+            }
             case 'SET_GAME_PLAYERS':
                 return action.players;
             case 'UPDATE_GAME_PLAYER_SCORE':

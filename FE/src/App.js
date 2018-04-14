@@ -7,7 +7,7 @@ import * as networkActions from 'actions/network';
 import * as userActions from 'actions/user';
 import ls from 'api/localStorage';
 import Error from 'containers/Error';
-
+const Room = AsyncComponent(() => import('containers/Room'));
 @connect(
     state => ({
         loadingStatus: state.network.loadingStatus,
@@ -32,7 +32,6 @@ export default class App extends Component {
                         path="/:roomName"
                         render={
                             ({ match }) => {
-                                const Room = AsyncComponent(() => import('containers/Room'));
                                 return <Room key={ match.params.roomName } roomName={ match.params.roomName }/>
                             }
                         }

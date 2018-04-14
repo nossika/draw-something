@@ -64,7 +64,9 @@ export default class Header extends Component {
                         { typeNode(type) }
                     </span>
                     <span>
-                        { type === 'room' ? `房间[${title}]` : title }
+                        { type === 'room'
+                            ? <span>房间：<span className="room-name">{ title }</span></span>
+                            : <span>{ title }</span> }
                     </span>
                 </div>
 
@@ -75,12 +77,13 @@ export default class Header extends Component {
                         this.state.nameEditable
                             ? (
                                 [
-                                    <span className="icon-wrapper">
+                                    <span key="icon" className="icon-wrapper">
                                         <svg className="icon" aria-hidden="true">
                                             <use xlinkHref="#icon-people"></use>
                                         </svg>
                                     </span>,
                                     <input
+                                        key="input"
                                         className="input input-white input-md"
                                         value={this.state.nameValue}
                                         onChange={
@@ -98,12 +101,12 @@ export default class Header extends Component {
                                             }
                                         }
                                     />,
-                                    <span className="icon-wrapper" onClick={::this.setName}>
+                                    <span key="confirm" className="icon-wrapper" onClick={::this.setName}>
                                         <svg className="icon clickable" aria-hidden="true">
                                             <use xlinkHref="#icon-roundcheck"></use>
                                         </svg>
                                     </span>,
-                                    <span className="icon-wrapper" onClick={
+                                    <span key="cancel" className="icon-wrapper" onClick={
                                         () => {
                                             this.setState({
                                                 nameEditable: false,
@@ -119,8 +122,8 @@ export default class Header extends Component {
                             : (
                                 <div title="点击修改昵称" className="clickable">
                                     <span className="icon-wrapper">
-                                        <svg className="icon" aria-hidden="true">
-                                            <use xlinkHref="#icon-profile"></use>
+                                        <svg style={{stroke: "#fff", fill: "#fff"}} className="icon" aria-hidden="true">
+                                            <use xlinkHref="#icon-people"></use>
                                         </svg>
                                     </span>
                                     <span>{ user.info.name || user.id }</span>
@@ -148,9 +151,11 @@ export default class Header extends Component {
         }
     }
     setName () {
-        wsAction.setUserInfo({
-            name: this.state.nameValue,
-        });
+        if (this.props.user.info.name !== this.state.nameValue) {
+            wsAction.setUserInfo({
+                name: this.state.nameValue,
+            });
+        }
         this.setState({
             nameEditable: false,
         });

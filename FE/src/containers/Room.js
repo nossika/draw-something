@@ -19,7 +19,7 @@ const renderMessageList = (messageList) => {
                         case 'enter':
                         case 'leave':
                             return (
-                                <div className="message" key={message.timestamp}>
+                                <div className="message" key={message.timestamp + message.type}>
                                     <div className="info system">
                                         <span className="by">{ getPersonName(message.by) } { {'enter': '进入房间', 'leave': '离开房间'}[message.type] }</span>
                                     </div>
@@ -71,19 +71,14 @@ export default class Room extends Component {
         let { owner, people, name } = currentRoom;
         return (
             <section>
-                <Header title={ name } type={'room'} />
+                <Header key="header" title={ name } type={'room'} />
                 <section className="room-container">
                     <section className="game-block">
-                        <Game />
+                        <Game key="game" />
                     </section>
                     <section className="people-block">
                         <div title="房主">
-                            <span className="icon-wrapper">
-                                <svg className="icon" aria-hidden="true">
-                                    <use xlinkHref="#icon-favor"></use>
-                                </svg>
-                            </span>
-                            <span>{ getPersonName(owner) }</span>
+                            <span>{ getPersonName(owner) }<span className="host-marker">(房主)</span></span>
                         </div>
                         <div>
                             {
@@ -91,11 +86,7 @@ export default class Room extends Component {
                                     let personName = getPersonName(person);
                                     return (
                                         <div key={person.id}>
-                                            <span className="icon-wrapper" style={{visibility: index === 0 ? 'visible' : 'hidden'}}>
-                                                <svg className="icon" aria-hidden="true">
-                                                    <use xlinkHref="#icon-group"></use>
-                                                </svg>
-                                            </span>
+                                            {/*<span style={{visibility: index === 0 ? 'visible' : 'hidden'}}></span>*/}
                                             <span title={personName}>
                                                 { personName }
                                             </span>
@@ -105,25 +96,27 @@ export default class Room extends Component {
                             }
                         </div>
                     </section>
-                    <section className="chat-block" ref="chat-block">
-                        { renderMessageList(currentRoom.messageList) }
-                    </section>
-                    <section className="input-block">
-                        <input
-                            className="input input-default input-md"
-                            placeholder="请输入内容"
-                            value={this.state.messageInputValue}
-                            onChange={
-                                e => {
-                                    let messageInputValue = e.target.value;
-                                    this.setState({
-                                        messageInputValue
-                                    });
+                    <section className="chat-block">
+                        <section className="message-wrapper"  ref="message-wrapper">
+                            { renderMessageList(currentRoom.messageList) }
+                        </section>
+                        <section className="input-wrapper input-group input-btn">
+                            <input
+                                className="input input-default input-md"
+                                placeholder="请输入内容"
+                                value={this.state.messageInputValue}
+                                onChange={
+                                    e => {
+                                        let messageInputValue = e.target.value;
+                                        this.setState({
+                                            messageInputValue
+                                        });
+                                    }
                                 }
-                            }
-                            onKeyDown={e => e.keyCode === 13 && this.sendMessage()}
-                        />
-                        <span className={"btn btn-default btn-md" + (this.state.messageInputValue ? '' : ' disabled')} onClick={::this.sendMessage}>发送</span>
+                                onKeyDown={e => e.keyCode === 13 && this.sendMessage()}
+                            />
+                            <span className={"btn btn-default btn-md" + (this.state.messageInputValue ? '' : ' disabled')} onClick={::this.sendMessage}>发送</span>
+                        </section>
                     </section>
                 </section>
             </section>
@@ -140,10 +133,11 @@ export default class Room extends Component {
     componentDidMount () {
         let { roomName, currentRoom } = this.props;
         this.message$$ = message$.subscribe(message => {
-            this.refs['chat-block'].scrollTop = this.refs['chat-block'].scrollHeight;
+            this.refs['message-wrapper'].scrollTop = this.refs['message-wrapper'].scrollHeight;
         });
         if (currentRoom && currentRoom.name === roomName) return;
         // todo 处理此时socket还未连接上的情况
+        document.title = `你画我猜online - ${roomName}`;
         wsAction.enterRoom(roomName);
     }
     componentWillUnmount () {

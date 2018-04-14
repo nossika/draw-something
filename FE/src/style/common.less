@@ -1,5 +1,5 @@
 @import './theme.less';
-
+@import './func.less';
 // base style
 * {
   margin: 0;
@@ -158,6 +158,32 @@ body {
   }
 }
 
+.input-group {
+  &.input-btn {
+    > .input {
+      border-radius: 4px 0 0 4px;
+    }
+    > .btn {
+      border-radius: 0 4px 4px 0;
+    }
+  }
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  .key {
+    color: #aaa;
+    margin-right: 6px;
+    font-size: 12px;
+    text-align: right;
+    width: 24%;
+  }
+  .value {
+    width: 76%;
+    .ellipsis();
+  }
+}
 
 
 
