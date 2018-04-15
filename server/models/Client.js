@@ -3,7 +3,7 @@ const CLIENTS_MAP = global.CLIENTS_MAP;
 const CLIENTS_EMITTER = global.CLIENTS_EMITTER;
 const Room = require('./Room');
 const Game = require('./Game');
-const words = require('../resource/words');
+const wordLib = require('../resource/word-lib');
 
 const handler = {
     enterRoom (roomName, cb) { // people enter
@@ -99,7 +99,7 @@ const handler = {
 
         room.game = new Game({
             playerIdList: room.clientIdList,
-            wordList: words.idiom
+            wordList: wordLib.idiom
         });
 
         room.game.on('broadcast', ({ channel, data, exclude }) => {

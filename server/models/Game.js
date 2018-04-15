@@ -1,5 +1,6 @@
 const util = require('../utils');
 const Rx = require('rxjs/Rx');
+const gameConfig = require('../resource/game-config');
 
 const ClIENTS_MAP = global.CLIENTS_MAP;
 function pickWord (wordList) {
@@ -8,11 +9,11 @@ function pickWord (wordList) {
 
 module.exports = class Game {
     constructor ({
-            roundTime = 10,
-            pendingTime = 5,
+            roundTime = gameConfig.roundTime,
+            pendingTime = gameConfig.pendingTime,
             playerIdList,
-            wordMatchScore = [5, 3, 1],
-            bankerScore = 3,
+            wordMatchScore = gameConfig.wordMatchScore,
+            bankerScore = gameConfig.bankerScore,
             wordList,
         }) {
 
