@@ -17,7 +17,7 @@ export default class Brush {
             let beginIndex = 0;
             let closeIndex = revokeIndex - 1;
             strokes.splice(revokeIndex, 1);
-            for (let i = revokeIndex - 1; i > 0; i--) {
+            for (let i = revokeIndex - 1; i >= 0; i--) {
                 if (strokes[i].type === 'close') {
                     closeIndex = i;
                 } else if (strokes[i].type === 'begin') {
@@ -28,7 +28,6 @@ export default class Brush {
             }
             // strokes.splice(beginIndex, endIndex - beginIndex + 1);
         }
-        console.log(strokes, 111)
 
         this.strokes = strokes;
         let { width, height } = this.ctx.canvas;
