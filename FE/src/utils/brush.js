@@ -15,19 +15,21 @@ export default class Brush {
         let revokeIndex;
         revokeLoop: while ((revokeIndex = strokes.findIndex(stroke => stroke.type === 'revoke')) !== -1) {
             let beginIndex = 0;
-            let endIndex = revokeIndex - 1;
+            let closeIndex = revokeIndex - 1;
             strokes.splice(revokeIndex, 1);
             for (let i = revokeIndex - 1; i > 0; i--) {
-                if (strokes[i].type === 'end') {
-                    endIndex = i;
+                if (strokes[i].type === 'close') {
+                    closeIndex = i;
                 } else if (strokes[i].type === 'begin') {
                     beginIndex = i;
-                    strokes.splice(beginIndex, endIndex - beginIndex + 1);
+                    strokes.splice(beginIndex, closeIndex - beginIndex + 1);
                     continue revokeLoop;
                 }
             }
-            strokes.splice(beginIndex, endIndex - beginIndex + 1);
+            // strokes.splice(beginIndex, endIndex - beginIndex + 1);
         }
+        console.log(strokes, 111)
+
         this.strokes = strokes;
         let { width, height } = this.ctx.canvas;
         this.ctx.clearRect(0, 0, width, height);
