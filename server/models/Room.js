@@ -44,7 +44,7 @@ class Room {
                     this.game.gameEnd();
                 }
                 this._emit('roomEmpty', this);
-            }, 10000);
+            }, 30000);
         } else if (client === this.owner) {
             for (let firstClientId of this.clientIdList) {
                 this.setOwner(CLIENTS_MAP.get(firstClientId));
