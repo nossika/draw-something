@@ -19,6 +19,6 @@
 
 启动前端服务：
 
-      $ cd ../FE
+      $ cd FE
       $ npm install
       $ npm run dev
